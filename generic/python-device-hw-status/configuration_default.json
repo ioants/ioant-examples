@@ -1,0 +1,27 @@
+{
+    "ioant" : {
+        "mqtt" : {
+            "global" : "tbd",
+            "local" : "tbd",
+            "client_id" : "hw-status",
+            "broker" : "urlbroker",
+            "user" : "hero",
+            "password" : "test",
+            "port" : 1883
+        },
+        "communication_delay" : 5000,
+        "latitude" : 0.0,
+        "longitude" : 0.0,
+        "app_generic_a" : 0,
+        "app_generic_b" : 0,
+        "app_generic_c" : 0
+    },
+    "publish_topic" : {
+        "CPUtemp" : {
+            "global" : "tbd",
+            "local" : "tbd",
+            "client_id" : "CPUtemp",
+            "stream_index" : 0
+        }
+    }
+}
