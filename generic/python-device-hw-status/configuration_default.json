@@ -23,5 +23,6 @@
             "client_id" : "CPUtemp",
             "stream_index" : 0
         }
-    }
+    },
+    "hw": "debian"
 }
