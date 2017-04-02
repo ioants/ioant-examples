@@ -22,5 +22,3 @@ pip install ioant
 ### Note!
 Some examples contain a Platformio project which require that you to install Platformio. Follow the official Platformio install instructions:
 - [Install instructions Platformio (official)](http://platformio.org/get-started/ide?install)
-
-After you've set up platformio, you will automatically have a python environment installed! However, you will still need to install ioant package.

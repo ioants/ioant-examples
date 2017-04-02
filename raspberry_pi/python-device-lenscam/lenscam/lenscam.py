@@ -3,7 +3,7 @@
 # Date: 2017-02-19
 # Descriptio: application for running a picamera
 # =============================================
-from ioant.ioant import ioant as ioant_core
+from ioant.sdk import IOAnt
 from time import sleep
 import os
 from picamera import PiCamera
@@ -41,7 +41,7 @@ def on_message(topic, message):
                                               ncis_user,
                                               ncis_url,
                                               ncis_internal_path,
-                                              ncis_prefix, 
+                                              ncis_prefix,
                                               ncis_image_name))
 
     msg = ioant.create_message('Image')
@@ -83,4 +83,4 @@ def take_picture(path):
     camera.close()
 
 # Mandatory line
-ioant = ioant_core.Ioant(on_connect, on_message)
+ioant = IOAnt(on_connect, on_message)
