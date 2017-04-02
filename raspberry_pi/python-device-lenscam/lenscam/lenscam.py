@@ -53,7 +53,7 @@ def on_connect():
     """ On connect function. Called when connected to broker """
     configuration = ioant.get_configuration()
     # There is now a connection
-    topic = ioant.get_topic()
+    topic = ioant.get_topic_structure()
     topic['top'] = "live"
     topic['global'] = configuration['ioant']['mqtt']['global']
     topic['local'] = configuration['ioant']['mqtt']['local']
