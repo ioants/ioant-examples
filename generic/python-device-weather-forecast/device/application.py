@@ -25,10 +25,11 @@ def event_job():
         for value_field in url_request['values_of_interest']:
             logger.info('Messagename:{0}, value: {1}'.format(MAP_FIELD_NAMES_TO_MESSAGE_NAMES.get(value_field), res.get(value_field)))
             msg = ioant.create_message(MAP_FIELD_NAMES_TO_MESSAGE_NAMES.get(value_field))
-            msg.value = float(res.get(value_field))
+            msg.value = res.get(value_field)
             t = ioant.get_topic_structure()
-            t['local'] = url_request['tag']
-            #ioant.publish(msg, t)
+            t['global'] = url_request['tag']
+            t['local'] = str(url_request['number_of_days'])
+            ioant.publish(msg, t)
 
 
 def setup(configuration):
@@ -47,7 +48,7 @@ def setup(configuration):
                                                                                                                      point['meters_above_sealevel'])
         API_url_list.append(TEMP_OBJECT)
 
-    schedule.every().day.at("23:15").do(event_job)
+    schedule.every().day.at("00:00").do(event_job)
 
 
 def loop():
@@ -69,6 +70,10 @@ def retrieve_data(request):
     #d_string = 'Retrieving weather forecast({0}) - found {1}'.format(request['api_url'], str(number_of_forecasts))
     logger.debug('Retrieving weather forecast({0}) - found {1}'.format(request['api_url'], str(number_of_forecasts)))
     results = {}
+    results['temperature'] = 0.0
+    results['humidity'] = 0.0
+    results['pressure'] = 0.0
+    number_of_valid_casts = 0
     now_date = datetime.utcnow()
     end_date = now_date + timedelta(days=request['number_of_days'])
     for forecast in doctest['weatherdata']['product']['time']:
@@ -77,12 +82,20 @@ def retrieve_data(request):
             # Filter out events according to number_of_days in config
             d = dateutil.parser.parse(forecast['@from'])
             if d.day == end_date.day:
+                number_of_valid_casts = number_of_valid_casts + 1
                 logger.info(d.day)
                 logger.info(forecast['@from'])
-                results['temperature'] = forecast['location']['temperature']['@value']
-                results['humidity'] = forecast['location']['humidity']['@value']
-                results['pressure'] = forecast['location']['pressure']['@value']
-                return results
+                results['temperature'] =  results['temperature'] + float(forecast['location']['temperature']['@value'])
+                results['humidity'] = results['humidity'] + float(forecast['location']['humidity']['@value'])
+                results['pressure'] = results['pressure'] + float(forecast['location']['pressure']['@value'])
+
+    if number_of_valid_casts > 0:
+        results['temperature'] = results['temperature'] / number_of_valid_casts
+        results['humidity'] = results['humidity'] / number_of_valid_casts
+        results['pressure'] = results['pressure'] / number_of_valid_casts
+        return results
+    else:
+        return False
 
 
 # =============================================================================
