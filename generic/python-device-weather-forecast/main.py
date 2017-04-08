@@ -15,7 +15,7 @@ logging.getLogger('').addHandler(console)
 def init_ascii():
     message = "\
 =========================================================================\n\
-|                         Trigger - scheduler                            |\n\
+|                         Weather - forecaster                          |\n\
 ========================================================================="
     return message
 
