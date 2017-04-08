@@ -47,7 +47,7 @@ def setup(configuration):
                                                                                                                      point['meters_above_sealevel'])
         API_url_list.append(TEMP_OBJECT)
 
-    schedule.every().day.at("23:04").do(event_job)
+    schedule.every().day.at("23:15").do(event_job)
 
 
 def loop():
