@@ -1,0 +1,37 @@
+{
+    "ioant" : {
+        "mqtt" : {
+            "global" : "forecast",
+            "local" : "local",
+            "client_id" : "weatherforecaster",
+            "broker" : "domain.com",
+            "user" : "hero",
+            "password" : "test",
+            "port" : 1883
+        },
+        "communication_delay" : 1000,
+        "latitude" : 0.0,
+        "longitude" : 0.0,
+        "app_generic_a" : 0,
+        "app_generic_b" : 0,
+        "app_generic_c" : 0
+    },
+    "forecast_points" : [
+                         {
+                            "tag" : "house",
+                            "longitude" : 50.57,
+                            "latitude" : 12.13,
+                            "meters_above_sealevel" : 100,
+                            "number_of_days" : 1,
+                            "values_of_interest" : ["temperature", "pressure", "humidity"]
+                         },
+                         {
+                            "tag" : "vacationhouse",
+                            "longitude" : 51.57,
+                            "latitude" : 10.13,
+                            "meters_above_sealevel" : 44,
+                            "number_of_days" : 3,
+                            "values_of_interest" : ["temperature", "pressure", "humidity"]
+                         }
+                        ]
+}
