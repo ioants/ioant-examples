@@ -3,6 +3,8 @@
 # Date: 2017-03-31
 # Description: Device hw status
 #   - CPU temperature
+#
+# sudo apt install lm-sensors
 # =============================================
 from ioant.sdk import IOAnt
 import logging
@@ -47,7 +49,7 @@ def loop():
                 msg.value = curCtemp
         except:
             e = sys.exc_info()[0]
-            print e 
+            print e
             msg.value = 0.222
 
     topic = ioant.get_topic_structure()
