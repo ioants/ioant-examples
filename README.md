@@ -1,9 +1,9 @@
 # ioant-examples
 This repository holds self-contained device and entity examples. The examples are divided according to platform support.
 
-- Generic: Code that can be run on multiple platforms.
-- Espressif: Code for e.g. esp8266.
-- Raspberrypi: Code that requires something inherent to the raspberrpi, e.g. a pi-camera
+- Generic: projects that can be run on multiple platforms.
+- Espressif: projectts for e.g. esp8266.
+- Raspberrypi: Projects that requires something inherent to the raspberrpi, e.g. a pi-camera
 
 ## Devices and Entities
 Both devices and entities operate within the IOAnt platform. The main differences between the two are the following:
@@ -18,7 +18,19 @@ All examples require that you have a working python 2.7 environment. It is recom
 # Install ioant package by using the PIP package manager
 pip install ioant
 ```
+Verify that you have ioant library installed by running pip freeze and find it in the list.
 
+```shell
+# List installed libraries
+pip freeze
+```
+
+Finally install the protobuf compiler (version 3 or later) by running:
+
+```shell
+# List installed libraries
+sudo apt-get install protobuf-compiler
+```
 ### Note!
 Some examples contain a Platformio project which require that you to install Platformio. Follow the official Platformio install instructions:
 - [Install instructions Platformio (official)](http://platformio.org/get-started/ide?install)
