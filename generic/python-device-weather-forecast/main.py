@@ -22,7 +22,7 @@ def init_ascii():
 
 if __name__ == "__main__":
     print(init_ascii())
-    logging.info('Starting weather forecaster')
+    logging.info('Starting device weather forecast')
     script_dir = os.path.dirname(os.path.realpath(__file__))
     argument_list = sys.argv
     number_of_arguments = len(sys.argv)
