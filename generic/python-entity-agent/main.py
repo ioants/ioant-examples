@@ -11,8 +11,6 @@ def init_ascii():
 ========================================================================="
     return message
 
-relative_path_steps = "../../../../../"
-
 if __name__ == "__main__":
     print(init_ascii())
     logging.info('Starting entity agent')

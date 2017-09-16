@@ -15,14 +15,14 @@ logging.getLogger('').addHandler(console)
 def init_ascii():
     message = "\
 =========================================================================\n\
-|                      Boiler plate - communication                     |\n\
+|                      Webhook - communication                          |\n\
 ========================================================================="
     return message
 
 
 if __name__ == "__main__":
     print(init_ascii())
-    logging.info('Starting device basic')
+    logging.info('Starting webhook basic')
     script_dir = os.path.dirname(os.path.realpath(__file__))
     argument_list = sys.argv
     number_of_arguments = len(sys.argv)
