@@ -1,13 +1,12 @@
 # Api.ai - sample webhook implementation in Python for IOAnt platform
-This python application is a boilerplate for webhook fulfillments to api.ai
+This python application is a boilerplate for webhook api.ai fulfillments to IOAnt platform
 
 ## Set up
 Install requirements:
 ```sh
 # It is recommended that you create a virtual environment
-pip install -r requirements
+pip install -r requirements.txt
 ```
-
 
 Set up configuration.json:
 ```sh
@@ -42,7 +41,10 @@ Contents of configuration.json
 }
 ```
 
-Run the application
+## Run the application
+The webserver will liste on **0.0.0.0:[port]/webhook**
+
+Start the application by running:
 ```
 python main.py
 ```
