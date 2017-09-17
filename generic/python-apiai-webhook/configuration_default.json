@@ -9,9 +9,6 @@
             "password" : "",
             "port" : 1883
         },
-        "web_server" : {
-            "port": 5000
-        },
         "communication_delay" : 5000,
         "latitude" : 0.0,
         "longitude" : 0.0,
@@ -19,5 +16,8 @@
         "app_generic_b" : 0,
         "app_generic_c" : 0
     },
-    "app_name" : "API AI IOAnt Bot"
+    "app_name" : "API AI IOAnt Bot",
+    "web_server" : {
+        "port": 5000
+    }
 }
