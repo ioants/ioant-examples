@@ -22,16 +22,23 @@ def intent_request(req):
     """ Handles and responds on webhook request from API.ai """
     action = req.get("result").get("action")
     print("request ioant action:", action)
+
+    topic = ioant.get_topic_structure()
+    #topic['global'] = configuration["api"]["ai"]["global"]
+    #topic['local'] =  configuration["publish_topic"]["CPUtemp"]["local"]
+    topic['client_id'] =  "bot1"
+    #topic['stream_index'] =  configuration["publish_topic"]["CPUtemp"]["stream_index"]
+
     if action == "light.on":
         action_text = "light on"
         msg = ioant.create_message("Switch")
         msg.state = True
-        ioant.publish(msg)
+        ioant.publish(msg,topic)
     elif action == "light.off":
         action_text = "light off"
         msg = ioant.create_message("Switch")
         msg.state = False
-        ioant.publish(msg)
+        ioant.publish(msg,topic)
     else:
         return {}
 
