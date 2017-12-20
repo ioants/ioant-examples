@@ -1,7 +1,8 @@
 # =============================================
-# Benny Saxen
-# Date: 2017-03-10
-#
+# File: heatercontrol.py
+# Author: Benny Saxen
+# Date: 2017-12-20
+# Description: IOANT heater control algorithm
 # =============================================
 from ioant.sdk import IOAnt
 import logging
@@ -9,6 +10,7 @@ import hashlib
 import math
 logger = logging.getLogger(__name__)
 
+#=====================================================
 def read_shunt_position():
     try:
         f = open("shunt_position.work",'r')
@@ -23,6 +25,7 @@ def read_shunt_position():
         pos = 0
     return pos
 
+#=====================================================
 def write_shunt_position(pos):
     try:
         f = open("shunt_position.work",'w')
@@ -33,6 +36,7 @@ def write_shunt_position(pos):
         print "ERROR write to shunt position file"
     return
 
+#=====================================================
 def publishStepperMsg(steps, direction):
     print "ORDER steps to move: "+str(steps) + " dir:" + str(direction)
     #return
@@ -52,99 +56,68 @@ def publishStepperMsg(steps, direction):
     topic['stream_index'] = 0
     ioant.publish(out_msg, topic)
 
+#=====================================================
 def heater_model():
+
+    global etc
+    global adj
+
     CLOCKWISE = 0
     COUNTERCLOCKWISE = 1
-    global etc
-    global current_shunt_position
+
     configuration = ioant.get_configuration()
+
+    minstep  = float(configuration["algorithm"]["minstep"])
+    minsmoke = float(configuration["algorithm"]["minsmoke"])
+
+
     global temperature_indoor
     global temperature_outdoor
     global temperature_water_in
     global temperature_water_out
     global temperature_smoke
-    global temperature_target
 
-
-    # If not all values present in the model - return
-    #if temperature_indoor == 999:
-    #    return
     if temperature_outdoor == 999:
         return
-    #if temperature_water_in == 999:
-    #    return
     if temperature_water_out == 999:
         return
     if temperature_smoke == 999:
         return
-    #if temperature_target == 999:
-    #    return
-    mc = []
-    mc.append(float(configuration["algorithm"]["c0"]))
-    mc.append(float(configuration["algorithm"]["c1"]))
-    mc.append(float(configuration["algorithm"]["c2"]))
-    mc.append(float(configuration["algorithm"]["c3"]))
-    mc.append(float(configuration["algorithm"]["c4"]))
-    mc.append(float(configuration["algorithm"]["c5"]))
-    mc.append(float(configuration["algorithm"]["c6"]))
-    mc.append(float(configuration["algorithm"]["c7"]))
-    mc.append(float(configuration["algorithm"]["c8"]))
-    mc.append(float(configuration["algorithm"]["c9"]))
 
-    minstep  = float(configuration["algorithm"]["minstep"])
-    minsmoke = float(configuration["algorithm"]["minsmoke"])
-    inertia  = float(configuration["algorithm"]["inertia"])
-    #print "Algorithm: " + str(level) + " " + str(coeff)
-    #diff = temperature_water_out - temperature_water_in
-    #adjust = temperature_water_out - temperature_target
-    #target = level - coeff*temperature_outdoor
-    #target = c1 + c2*(1-1/(1+math.exp(-temperature_outdoor/c3)))
-    #adjust = target - temperature_water_out
+    # Expected water out temperature from heater
+    y = -1.0*temperature_outdoor + 37
 
-    if temperature_outdoor > 10:
-        temperature_outdoor = 10
+    # Energy outage
+    energy = temperature_water_out - temperature_water_in
 
-    if temperature_outdoor < -20:
-        temperature_outdoor = -20
+    steps = (int)(abs(y - temperature_water_out)*adj)
 
-    n = 0
-    prev_x = 0
-    for x in mc:
-        if(temperature_outdoor > x):
-            delta = 10*(temperature_outdoor - prev_x)/(x - prev_x)
-            new_shunt_position  = (n-1)*10 + delta
-            break
+    if steps > 30:
+        return
+
+    if steps > minstep and temperature_smoke > minsmoke and etc == 0:
+        if(y > temperature_water_out):
+            direction = COUNTERCLOCKWISE
+            print "Direction is COUNTERCLOCKWISE (increase) " + str(steps)
         else:
-            n = n + 1
-            prev_x = x
-            print x
+            direction = CLOCKWISE
+            print "Direction is CLOCKWISE (decrease) " + str(steps)
 
-    #print "xxxx " + str(new_shunt_position)
+        etc = float(configuration["algorithm"]["inertia"])
 
-    adjust = new_shunt_position - current_shunt_position
-    if adjust < 0:
-        direction = CLOCKWISE # decrease temperature
-    else:
-        direction = COUNTERCLOCKWISE # increase temperature
-
-    steps = int(abs(adjust*3)) # 3 steps = 0.1 unit of 1-10 scale
-
-    print "New Shunt Position: " + str(new_shunt_position) + " Steps: " + str(steps) + " Dir: " + str(direction)
-    print "Current shunt position " + str(current_shunt_position)
-    if etc == 0 and steps > minstep and temperature_smoke > minsmoke:
-        current_shunt_position = round(new_shunt_position,0)
-        write_shunt_position(current_shunt_position)
+        #adj = (y - 37)/temperature_outdoor
         publishStepperMsg(steps, direction)
-        etc = inertia # 5 min if delay = 5 sec
+    else:
+        print str(y) + " Energy " + str(energy) + " countdown " + str(etc) + " steps " + str(steps)
 
-    print "etc " + str(etc)
-
+#=====================================================
 def getTopicHash(topic):
     res = topic['top'] + topic['global'] + topic['local'] + topic['client_id'] + str(topic['message_type']) + str(topic['stream_index'])
     tres = hash(res)
     tres = tres% 10**8
     return tres
 
+#=====================================================
 def subscribe_to_topic(par,msgt):
     configuration = ioant.get_configuration()
     topic = ioant.get_topic_structure()
@@ -159,14 +132,16 @@ def subscribe_to_topic(par,msgt):
     shash = getTopicHash(topic)
     return shash
 
-
+#=====================================================
 def setup(configuration):
     """ setup function """
     global etc
+    global adj
     global current_shunt_position
     current_shunt_position = read_shunt_position()
-    print "Initial shunt position: " + str(current_shunt_position)
-    etc = 0
+    #print "Initial shunt position: " + str(current_shunt_position)
+    etc = 999
+    adj = 3.0
     global temperature_indoor
     global temperature_outdoor
     global temperature_water_in
@@ -183,6 +158,9 @@ def setup(configuration):
 
     ioant.setup(configuration)
 
+    configuration = ioant.get_configuration()
+    etc = float(configuration["algorithm"]["inertia"])
+#=====================================================
 def loop():
     """ Loop function """
     global etc
@@ -192,7 +170,7 @@ def loop():
 
     heater_model()
 
-
+#=====================================================
 def on_message(topic, message):
     global hash_indoor
     global hash_outdoor
@@ -209,7 +187,7 @@ def on_message(topic, message):
     global temperature_target
 
     """ Message function. Handles recieved message from broker """
-    #print "message received"
+
     if topic["message_type"] == ioant.get_message_type("Trigger"):
         shash = getTopicHash(topic)
         if shash == hash_target:
@@ -220,23 +198,24 @@ def on_message(topic, message):
         shash = getTopicHash(topic)
         #logging.info("Temp = "+str(message.value)+" hash="+str(shash))
         if shash == hash_indoor:
-            print "indoor"
+            print "===> indoor " + str(message.value)
             temperature_indoor = message.value
         if shash == hash_outdoor:
-            print "outdoor"
+            print "===> outdoor " + str(message.value)
             temperature_outdoor = message.value
         if shash == hash_water_in:
-            print "water in"
+            print "===> water in " + str(message.value)
             temperature_water_in = message.value
         if shash == hash_water_out:
-            print "water out"
+            print "===> water out " + str(message.value)
             temperature_water_out = message.value
         if shash == hash_smoke:
-            print "smoke"
+            print "===> smoke " + str(message.value)
             temperature_smoke = message.value
-        print message.value
+
     #if "Temperature" == ioant.get_message_type_name(topic[message_type]):
 
+#=====================================================
 def on_connect():
     """ On connect function. Called when connected to broker """
     global hash_indoor
@@ -247,9 +226,9 @@ def on_connect():
     global hash_target
 
     # There is now a connection
-    hash_indoor    = 0 #subscribe_to_topic("indoor","Temperature")
+    hash_indoor    = subscribe_to_topic("indoor","Temperature")
     hash_outdoor   = subscribe_to_topic("outdoor","Temperature")
-    hash_water_in  = 0 #subscribe_to_topic("water_in","Temperature")
+    hash_water_in  = subscribe_to_topic("water_in","Temperature")
     hash_water_out = subscribe_to_topic("water_out","Temperature")
     hash_smoke     = subscribe_to_topic("smoke","Temperature")
 
