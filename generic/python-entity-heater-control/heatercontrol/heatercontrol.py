@@ -61,6 +61,8 @@ def heater_model():
 
     global etc
     global adj
+    global h_state
+    global uptime
 
     CLOCKWISE = 0
     COUNTERCLOCKWISE = 1
@@ -84,32 +86,60 @@ def heater_model():
     if temperature_smoke == 999:
         return
 
-    # Expected water out temperature from heater
-    y = -1.0*temperature_outdoor + 37
+    # READY  (all necessary data recieved)
+    h_state = 2
 
-    # Energy outage
-    energy = temperature_water_out - temperature_water_in
-
-    steps = (int)(abs(y - temperature_water_out)*adj)
-
-    if steps > 30:
-        return
-
-    if steps > minstep and temperature_smoke > minsmoke and etc == 0:
-        if(y > temperature_water_out):
-            direction = COUNTERCLOCKWISE
-            print "Direction is COUNTERCLOCKWISE (increase) " + str(steps)
-        else:
-            direction = CLOCKWISE
-            print "Direction is CLOCKWISE (decrease) " + str(steps)
-
-        etc = float(configuration["algorithm"]["inertia"])
-
-        #adj = (y - 37)/temperature_outdoor
-        publishStepperMsg(steps, direction)
+    if temperature_smoke > minsmoke:
+        uptime = uptime + 1
+        # RUNNING  (the heater is on and  )
+        if uptime < 3601:
+            # STARTING  (the heater is on and under start-up )
+            h_state = 3
+        if uptime > 3600:
+            # RUNNING  (the heater is on and max heated  )
+            h_state = 4
+        # wraparound counter
+        if uptime > 99999:
+            uptime = 3600
+    # Heater is off
     else:
-        print str(y) + " Energy " + str(energy) + " countdown " + str(etc) + " steps " + str(steps)
+        if h_state == 4:
+            h_state = 5
+            uptime = 3600
+            
+        uptime = uptime -1
 
+        if uptime < 1:
+            uptime = 0
+
+    if h_state == 4:
+
+        # Expected water out temperature from heater
+        y = -1.0*temperature_outdoor + 37
+
+        # Energy outage
+        energy = temperature_water_out - temperature_water_in
+
+        steps = (int)(abs(y - temperature_water_out)*adj)
+
+        if steps > 30:
+            return
+
+        if steps > minstep and temperature_smoke > minsmoke and etc == 0:
+            if(y > temperature_water_out):
+                direction = COUNTERCLOCKWISE
+                print "Direction is COUNTERCLOCKWISE (increase) " + str(steps)
+            else:
+                direction = CLOCKWISE
+                print "Direction is CLOCKWISE (decrease) " + str(steps)
+
+            etc = float(configuration["algorithm"]["inertia"])
+
+            publishStepperMsg(steps, direction)
+        else:
+            print str(uptime) + " state " + str(h_state) + " " + str(y) + " Energy " + str(energy) + " countdown " + str(etc) + " steps " + str(steps)
+    else:
+        print str(uptime) + " state " + str(h_state)
 #=====================================================
 def getTopicHash(topic):
     res = topic['top'] + topic['global'] + topic['local'] + topic['client_id'] + str(topic['message_type']) + str(topic['stream_index'])
@@ -137,8 +167,9 @@ def setup(configuration):
     """ setup function """
     global etc
     global adj
-    global current_shunt_position
-    current_shunt_position = read_shunt_position()
+    global h_state
+    global uptime
+    #current_shunt_position = read_shunt_position()
     #print "Initial shunt position: " + str(current_shunt_position)
     etc = 999
     adj = 3.0
@@ -160,6 +191,10 @@ def setup(configuration):
 
     configuration = ioant.get_configuration()
     etc = float(configuration["algorithm"]["inertia"])
+
+    # Initiated
+    h_state = 1
+    uptime = 3600
 #=====================================================
 def loop():
     """ Loop function """
