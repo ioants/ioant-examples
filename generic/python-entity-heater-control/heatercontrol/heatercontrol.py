@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2017-12-20
+# Date: 2017-12-26
 # Description: IOANT heater control algorithm
 # =============================================
 from ioant.sdk import IOAnt
@@ -11,29 +11,27 @@ import math
 logger = logging.getLogger(__name__)
 
 #=====================================================
-def read_shunt_position():
+def read_status():
     try:
-        f = open("shunt_position.work",'r')
+        f = open("status.work",'r')
         pos = int(f.read())
         f.close()
     except:
-        print("WARNING Create shunt position file")
-        f = open("shunt_position.work",'w')
+        print("WARNING Create status file")
+        f = open("status.work",'w')
         s = str(0)
         f.write(s)
         f.close()
-        pos = 0
-    return pos
+    return
 
 #=====================================================
-def write_shunt_position(pos):
+def write_status(status):
     try:
-        f = open("shunt_position.work",'w')
-        s = str(int(pos))
-        f.write(s)
+        f = open("status.work",'w')
+        f.write(status)
         f.close()
     except:
-        print "ERROR write to shunt position file"
+        print "ERROR write to status file"
     return
 
 #=====================================================
@@ -106,23 +104,32 @@ def heater_model():
         if h_state == 4:
             h_state = 5
             uptime = 3600
-            
+
         uptime = uptime -1
 
         if uptime < 1:
             uptime = 0
 
+    # RUNNING  (the heater is on and max heated  )
     if h_state == 4:
 
         # Expected water out temperature from heater
         y = -1.0*temperature_outdoor + 37
 
+        # if target temperature is below typical indoor temperature - do nothing
+        if y < 20:
+            status = "Target heat to low " + str(y)
+            write_status(status)
+            return
         # Energy outage
         energy = temperature_water_out - temperature_water_in
 
         steps = (int)(abs(y - temperature_water_out)*adj)
 
+        # Upper limit for steps in one order
         if steps > 30:
+            status = "steps overflow " + str(steps)
+            write_status(status)
             return
 
         if steps > minstep and temperature_smoke > minsmoke and etc == 0:
@@ -137,9 +144,13 @@ def heater_model():
 
             publishStepperMsg(steps, direction)
         else:
-            print str(uptime) + " state " + str(h_state) + " " + str(y) + " Energy " + str(energy) + " countdown " + str(etc) + " steps " + str(steps)
+            status = str(uptime) + " state " + str(h_state) + " " + str(y) + " Energy " + str(energy) + " countdown " + str(etc) + " steps " + str(steps)
+            write_status(status)
+            print status
     else:
-        print str(uptime) + " state " + str(h_state)
+        status = "uptime " + str(uptime) + " state " + str(h_state)
+        write_status(status)
+        print status
 #=====================================================
 def getTopicHash(topic):
     res = topic['top'] + topic['global'] + topic['local'] + topic['client_id'] + str(topic['message_type']) + str(topic['stream_index'])
