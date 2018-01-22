@@ -24,7 +24,7 @@ relative_path_steps = "../../../../../"
 
 if __name__ == "__main__":
     print(init_ascii())
-    logging.info('Starting device basic')
+    logging.info('Starting...')
     script_dir = os.path.dirname(os.path.realpath(__file__))
     argument_list = sys.argv
     number_of_arguments = len(sys.argv)
