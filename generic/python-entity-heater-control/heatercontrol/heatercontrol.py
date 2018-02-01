@@ -114,7 +114,7 @@ def heater_model():
     if h_state == 4:
 
         # Expected water out temperature from heater
-        y = -1.0*temperature_outdoor + 37
+        y = -1.0*temperature_outdoor + 38
 
         # if target temperature is below typical indoor temperature - do nothing
         if y < 20:
