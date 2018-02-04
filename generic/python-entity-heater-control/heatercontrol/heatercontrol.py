@@ -126,7 +126,7 @@ def heater_model():
         if steps > 30:
             status = "steps overflow " + str(steps)
             write_status(status)
-            return
+            steps = 10
 
         if steps > minstep and temperature_smoke > minsmoke and etc == 0:
             if(y > temperature_water_out):
