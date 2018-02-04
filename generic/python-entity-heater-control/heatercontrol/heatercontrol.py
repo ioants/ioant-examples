@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2017-12-26
+# Date: 2018-02-04
 # Description: IOANT heater control algorithm
 # =============================================
 from ioant.sdk import IOAnt
@@ -89,22 +89,18 @@ def heater_model():
 
     if temperature_smoke > minsmoke:
         uptime = uptime + 1
+        if uptime > 3600:
+            uptime = 3600
         # RUNNING  (the heater is on and  )
-        if uptime < 3601:
+        if uptime < 3600:
             # STARTING  (the heater is on and under start-up )
             h_state = 3
-        if uptime > 3600:
+        if uptime == 3600:
             # RUNNING  (the heater is on and max heated  )
             h_state = 4
-        # wraparound counter
-        if uptime > 99999:
-            uptime = 3600
+        
     # Heater is off
     else:
-        if h_state == 4:
-            h_state = 5
-            uptime = 3600
-
         uptime = uptime -1
 
         if uptime < 1:
