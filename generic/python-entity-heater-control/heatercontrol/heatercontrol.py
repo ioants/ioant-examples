@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-02-04
+# Date: 2018-02-05
 # Description: IOANT heater control algorithm
 # =============================================
 from ioant.sdk import IOAnt
@@ -115,6 +115,10 @@ def heater_model():
         # if target temperature is below typical indoor temperature - do nothing
         if y < 20:
             status = "Target heat to low " + str(y)
+            write_status(status)
+            return
+        if y > 45:
+            status = "Target heat to high " + str(y)
             write_status(status)
             return
         # Energy outage
