@@ -63,17 +63,17 @@
         }
     },
     "algorithm" : {
-        "c0" : 10,
-        "c1" :  6,
-        "c2" :  3,
-        "c3" :  0,
-        "c4" : -3,
-        "c5" : -10,
-        "c6" : -15,
-        "c7" : -20,
-        "c8" : -25,
-        "c9" : -30,
-        "minstep" : 1,
+        "mintemp" : -7,
+        "maxtemp" : 10,
+        "void1" : 1,
+        "void2" : 2,
+        "void3" : 3,
+        "void4" : 4,
+        "void5" : 5,
+        "void6" : 6,
+        "minheat" : 20,
+        "maxheat" : 40,
+        "minstep" : 5,
         "minsmoke" : 27.0,
         "inertia" : 120
     }
