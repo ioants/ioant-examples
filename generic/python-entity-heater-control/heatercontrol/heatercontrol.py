@@ -118,10 +118,10 @@ def heater_model():
             write_status(status)
             y = 20
             
-        if y > 42:
+        if y > 40:
             status = "Target heat to high " + str(y)
             write_status(status)
-            y = 42
+            y = 40
             
         # Energy outage
         energy = temperature_water_out - temperature_water_in
