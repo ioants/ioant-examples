@@ -67,10 +67,25 @@ def heater_model():
 
     configuration = ioant.get_configuration()
 
-    minstep  = float(configuration["algorithm"]["minstep"])
+    minsteps = float(configuration["algorithm"]["minsteps"])
+    maxsteps = float(configuration["algorithm"]["maxsteps"])
+    defsteps = float(configuration["algorithm"]["defsteps"])
+    
     minsmoke = float(configuration["algorithm"]["minsmoke"])
+    
+    mintemp = float(configuration["algorithm"]["mintemp"])
+    maxtemp = float(configuration["algorithm"]["mintemp"])
+    
+    minheat = float(configuration["algorithm"]["minheat"])
+    maxheat = float(configuration["algorithm"]["maxheat"])
+    
+    onofftime = float(configuration["algorithm"]["onofftime"])
 
+    coeff = (maxheat - minheat)/(mintemp - maxtemp)
+    mconst = minheat - coeff*maxtemp
 
+    print "coeff = " + str(coeff) + " const = " + str(mconst)
+    
     global temperature_indoor
     global temperature_outdoor
     global temperature_water_in
@@ -89,13 +104,13 @@ def heater_model():
 
     if temperature_smoke > minsmoke:
         uptime = uptime + 1
-        if uptime > 3600:
-            uptime = 3600
+        if uptime > onofftime:
+            uptime = onofftime
         # RUNNING  (the heater is on and  )
-        if uptime < 3600:
+        if uptime < onofftime:
             # STARTING  (the heater is on and under start-up )
             h_state = 3
-        if uptime == 3600:
+        if uptime == onofftime:
             # RUNNING  (the heater is on and max heated  )
             h_state = 4
         
@@ -110,18 +125,18 @@ def heater_model():
     if h_state == 4:
 
         # Expected water out temperature from heater
-        y = -1.0*temperature_outdoor + 38
+        y = coeff*temperature_outdoor + mconst
 
         # if target temperature is below typical indoor temperature - do nothing
-        if y < 20:
+        if y < minheat:
             status = "Target heat to low " + str(y)
             write_status(status)
-            y = 20
+            y = minheat
             
-        if y > 40:
+        if y > maxheat:
             status = "Target heat to high " + str(y)
             write_status(status)
-            y = 40
+            y = maxheat
             
         # Energy outage
         energy = temperature_water_out - temperature_water_in
@@ -129,12 +144,12 @@ def heater_model():
         steps = (int)(abs(y - temperature_water_out)*adj)
 
         # Upper limit for steps in one order
-        if steps > 30:
+        if steps > maxsteps:
             status = "steps overflow " + str(steps)
             write_status(status)
-            steps = 10
+            steps = defsteps
 
-        if steps > minstep and temperature_smoke > minsmoke and etc == 0:
+        if steps > minsteps and temperature_smoke > minsmoke and etc == 0:
             if(y > temperature_water_out):
                 direction = COUNTERCLOCKWISE
                 print "Direction is COUNTERCLOCKWISE (increase) " + str(steps)
@@ -207,7 +222,7 @@ def setup(configuration):
 
     # Initiated
     h_state = 1
-    uptime = 3600
+    uptime = float(configuration["algorithm"]["uptime"])
 #=====================================================
 def loop():
     """ Loop function """
