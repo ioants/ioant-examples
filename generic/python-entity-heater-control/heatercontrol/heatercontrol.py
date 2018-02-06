@@ -161,7 +161,7 @@ def heater_model():
 
             publishStepperMsg(steps, direction)
         else:
-            status = str(uptime) + " state " + str(h_state) + " " + str(y) + " Energy " + str(energy) + " countdown " + str(etc) + " steps " + str(steps)
+            status = str(uptime) + " state " + str(h_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(etc) + " steps " + str(steps)
             write_status(status)
             print status
     else:
@@ -223,6 +223,7 @@ def setup(configuration):
     # Initiated
     h_state = 1
     uptime = float(configuration["algorithm"]["uptime"])
+    adj = float(configuration["algorithm"]["relax"])
 #=====================================================
 def loop():
     """ Loop function """
