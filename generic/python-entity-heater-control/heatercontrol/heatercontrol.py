@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-02-05
+# Date: 2018-02-06
 # Description: IOANT heater control algorithm
 # =============================================
 from ioant.sdk import IOAnt
@@ -118,10 +118,10 @@ def heater_model():
             write_status(status)
             y = 20
             
-        if y > 45:
+        if y > 42:
             status = "Target heat to high " + str(y)
             write_status(status)
-            y = 45
+            y = 42
             
         # Energy outage
         energy = temperature_water_out - temperature_water_in
