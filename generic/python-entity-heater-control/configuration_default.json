@@ -17,7 +17,7 @@
         "app_generic_c" : 0
     },
     "subscribe_topic" : {
-        "target" : {
+        "free_for_use" : {
             "global" : "tbd",
             "local" : "tbd",
             "client_id" : "tbd",
@@ -65,16 +65,16 @@
     "algorithm" : {
         "mintemp" : -7,
         "maxtemp" : 10,
+        "minheat" : 20,
+        "maxheat" : 40,
+        "minsteps" : 5,
         "maxsteps" : 30,
         "defsteps" : 10,
         "onofftime" : 3600,
         "relax" : 3,
-        "void5" : 5,
-        "void6" : 6,
-        "minheat" : 20,
-        "maxheat" : 40,
-        "minsteps" : 5,
         "minsmoke" : 27.0,
-        "inertia" : 120
+        "inertia" : 120,
+        "x_0" : 0,
+        "y_0" : 35
     }
 }

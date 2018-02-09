@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-02-06
+# Date: 2018-02-09
 # Description: IOANT heater control algorithm
 # =============================================
 from ioant.sdk import IOAnt
@@ -57,35 +57,28 @@ def publishStepperMsg(steps, direction):
 #=====================================================
 def heater_model():
 
-    global etc
-    global adj
-    global h_state
-    global uptime
+    global g_minsteps,g_maxsteps,g_defsteps
+    global g_minsmoke
+    global g_mintemp,g_maxtemp
+    global g_minheat,g_maxheat
+    global g_x_0,g_y_0
+    global g_onofftime
+    global g_relax
+    global g_inertia
+
+    global r_uptime
+    global r_state
+    global r_inertia
 
     CLOCKWISE = 0
     COUNTERCLOCKWISE = 1
 
-    configuration = ioant.get_configuration()
+    coeff1 = (g_maxheat - g_y_0)/(g_mintemp - g_x_0)
+    mconst1 = g_y_0 - coeff1*g_x_0
 
-    minsteps = float(configuration["algorithm"]["minsteps"])
-    maxsteps = float(configuration["algorithm"]["maxsteps"])
-    defsteps = float(configuration["algorithm"]["defsteps"])
-    
-    minsmoke = float(configuration["algorithm"]["minsmoke"])
-    
-    mintemp = float(configuration["algorithm"]["mintemp"])
-    maxtemp = float(configuration["algorithm"]["mintemp"])
-    
-    minheat = float(configuration["algorithm"]["minheat"])
-    maxheat = float(configuration["algorithm"]["maxheat"])
-    
-    onofftime = float(configuration["algorithm"]["onofftime"])
+    coeff2 = (g_y_0 - g_minheat)/(g_x_0 - g_maxtemp)
+    mconst2 = g_minheat - coeff2*g_maxtemp
 
-    coeff = (maxheat - minheat)/(mintemp - maxtemp)
-    mconst = minheat - coeff*maxtemp
-
-    print "coeff = " + str(coeff) + " const = " + str(mconst)
-    
     global temperature_indoor
     global temperature_outdoor
     global temperature_water_in
@@ -100,56 +93,60 @@ def heater_model():
         return
 
     # READY  (all necessary data recieved)
-    h_state = 2
+    r_state = 2
 
-    if temperature_smoke > minsmoke:
-        uptime = uptime + 1
-        if uptime > onofftime:
-            uptime = onofftime
+    if temperature_smoke > g_minsmoke:
+        r_uptime = r_uptime + 1
+        if r_uptime > g_onofftime:
+            r_uptime = g_onofftime
         # RUNNING  (the heater is on and  )
-        if uptime < onofftime:
+        if r_uptime < g_onofftime:
             # STARTING  (the heater is on and under start-up )
-            h_state = 3
-        if uptime == onofftime:
+            r_state = 3
+        if r_uptime == g_onofftime:
             # RUNNING  (the heater is on and max heated  )
-            h_state = 4
-        
+            r_state = 4
+
     # Heater is off
     else:
-        uptime = uptime -1
+        r_uptime = r_uptime -1
 
-        if uptime < 1:
-            uptime = 0
+        if r_uptime < 1:
+            r_uptime = 0
 
     # RUNNING  (the heater is on and max heated  )
-    if h_state == 4:
-
+    if r_state == 4:
+        #print "coeff1 = " + str(coeff1) + " const = " + str(mconst1)
+        #print "coeff2 = " + str(coeff2) + " const = " + str(mconst2)
         # Expected water out temperature from heater
-        y = coeff*temperature_outdoor + mconst
+        if temperature_outdoor < 0:
+            y = coeff1*temperature_outdoor + mconst1
+        else:
+            y = coeff2*temperature_outdoor + mconst2
 
         # if target temperature is below typical indoor temperature - do nothing
-        if y < minheat:
+        if y < g_minheat:
             status = "Target heat to low " + str(y)
             write_status(status)
-            y = minheat
-            
-        if y > maxheat:
+            y = g_minheat
+
+        if y > g_maxheat:
             status = "Target heat to high " + str(y)
             write_status(status)
-            y = maxheat
-            
+            y = g_maxheat
+
         # Energy outage
         energy = temperature_water_out - temperature_water_in
 
-        steps = (int)(abs(y - temperature_water_out)*adj)
+        steps = (int)(abs(y - temperature_water_out)*g_relax)
 
         # Upper limit for steps in one order
-        if steps > maxsteps:
+        if steps > g_maxsteps:
             status = "steps overflow " + str(steps)
             write_status(status)
-            steps = defsteps
+            steps = g_defsteps
 
-        if steps > minsteps and temperature_smoke > minsmoke and etc == 0:
+        if steps > g_minsteps and temperature_smoke > g_minsmoke and r_inertia == 0:
             if(y > temperature_water_out):
                 direction = COUNTERCLOCKWISE
                 print "Direction is COUNTERCLOCKWISE (increase) " + str(steps)
@@ -157,15 +154,14 @@ def heater_model():
                 direction = CLOCKWISE
                 print "Direction is CLOCKWISE (decrease) " + str(steps)
 
-            etc = float(configuration["algorithm"]["inertia"])
-
+            r_inertia = g_inertia
             publishStepperMsg(steps, direction)
         else:
-            status = str(uptime) + " state " + str(h_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(etc) + " steps " + str(steps)
+            status = str(r_uptime) + " state " + str(r_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
             write_status(status)
             print status
     else:
-        status = "uptime " + str(uptime) + " state " + str(h_state)
+        status = "uptime " + str(r_uptime) + " state " + str(r_state)
         write_status(status)
         print status
 #=====================================================
@@ -192,15 +188,34 @@ def subscribe_to_topic(par,msgt):
 
 #=====================================================
 def setup(configuration):
-    """ setup function """
-    global etc
-    global adj
-    global h_state
-    global uptime
-    #current_shunt_position = read_shunt_position()
-    #print "Initial shunt position: " + str(current_shunt_position)
-    etc = 999
-    adj = 3.0
+    # Configuration
+    global g_minsteps,g_maxsteps,g_defsteps
+    global g_minsmoke
+    global g_mintemp,g_maxtemp
+    global g_minheat,g_maxheat
+    global g_x_0,g_y_0
+    global g_onofftime
+    global g_relax
+    global g_inertia
+
+    global r_uptime
+    global r_state
+    global r_inertia
+
+    g_minsteps = 5
+    g_maxsteps = 30
+    g_defsteps = 10
+    g_minsmoke = 27
+    g_mintemp = -7
+    g_maxtemp = 10
+    g_minheat = 20
+    g_maxheat = 40
+    g_x_0 = 0
+    g_y_0 = 35
+    g_onofftime = 3600
+    g_relax = 3.0
+    g_inertia = 130
+
     global temperature_indoor
     global temperature_outdoor
     global temperature_water_in
@@ -218,19 +233,37 @@ def setup(configuration):
     ioant.setup(configuration)
 
     configuration = ioant.get_configuration()
-    etc = float(configuration["algorithm"]["inertia"])
 
-    # Initiated
-    h_state = 1
-    uptime = float(configuration["algorithm"]["uptime"])
-    adj = float(configuration["algorithm"]["relax"])
+    g_minsteps = float(configuration["algorithm"]["minsteps"])
+    g_maxsteps = float(configuration["algorithm"]["maxsteps"])
+    g_defsteps = float(configuration["algorithm"]["defsteps"])
+
+    g_minsmoke = float(configuration["algorithm"]["minsmoke"])
+
+    g_mintemp = float(configuration["algorithm"]["mintemp"])
+    g_maxtemp = float(configuration["algorithm"]["maxtemp"])
+
+    g_minheat = float(configuration["algorithm"]["minheat"])
+    g_maxheat = float(configuration["algorithm"]["maxheat"])
+
+    g_x_0 = float(configuration["algorithm"]["x_0"])
+    g_y_0 = float(configuration["algorithm"]["y_0"])
+
+    g_onofftime = float(configuration["algorithm"]["onofftime"])
+
+    g_inertia = float(configuration["algorithm"]["inertia"])
+
+    g_relax = float(configuration["algorithm"]["relax"])
+
+    r_state = 1
+    r_inertia = g_inertia
+    r_uptime = g_onofftime
 #=====================================================
 def loop():
-    """ Loop function """
-    global etc
+    global r_inertia
     ioant.update_loop()
-    if etc > 0:
-        etc -= 1
+    if r_inertia > 0:
+        r_inertia -= 1
 
     heater_model()
 
