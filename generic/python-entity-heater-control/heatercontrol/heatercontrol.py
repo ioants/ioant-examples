@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-02-09
+# Date: 2018-02-13
 # Description: IOANT heater control algorithm
 # =============================================
 from ioant.sdk import IOAnt
@@ -89,6 +89,8 @@ def heater_model():
         return
     if temperature_water_out == 999:
         return
+    if temperature_water_in == 999:
+        return
     if temperature_smoke == 999:
         return
 
@@ -114,6 +116,7 @@ def heater_model():
         if r_uptime < 1:
             r_uptime = 0
 
+            
     # RUNNING  (the heater is on and max heated  )
     if r_state == 4:
         #print "coeff1 = " + str(coeff1) + " const = " + str(mconst1)
@@ -137,8 +140,10 @@ def heater_model():
 
         # Energy outage
         energy = temperature_water_out - temperature_water_in
-
-        steps = (int)(abs(y - temperature_water_out)*g_relax)
+        if energy > 0:
+            steps = (int)(abs(y - temperature_water_out)*g_relax)
+        else:
+            steps = 0
 
         # Upper limit for steps in one order
         if steps > g_maxsteps:
