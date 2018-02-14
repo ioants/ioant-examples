@@ -36,7 +36,7 @@ def write_status(status):
 #=====================================================
 def write_log(message):
     try:
-        f = open("status.msg",'a')
+        f = open("status.work",'a')
         f.write(message)
         f.write('\n')
         f.close()
@@ -145,13 +145,13 @@ def heater_model():
         # if target temperature is below typical indoor temperature - do nothing
         if y < g_minheat:
             status = "Target heat to low " + str(y)
-            write_status(status)
+            #write_status(status)
             y = g_minheat
             msg = msg + ":Target temp to low"
 
         if y > g_maxheat:
             status = "Target heat to high " + str(y)
-            write_status(status)
+            #write_status(status)
             y = g_maxheat
             msg = msg + ":Target temp to high"
 
@@ -165,7 +165,7 @@ def heater_model():
         # Upper limit for steps in one order
         if steps > g_maxsteps:
             msg = msg + ":Too many steps = " + str(steps)
-            write_status(status)
+            #write_status(status)
             steps = g_defsteps
 
         if steps > g_minsteps and temperature_smoke > g_minsmoke and r_inertia == 0:
@@ -181,16 +181,17 @@ def heater_model():
             r_inertia = g_inertia
             publishStepperMsg(steps, direction)
         else:
-            msg = msg + ":Min steps or interia = " + str(steps) + " " + str(r_inertia)
+            msg = msg + ":Min steps or inertia = " + str(steps) + " " + str(r_inertia)
             status = str(r_uptime) + " state " + str(r_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
-            write_status(status)
+            #write_status(status)
             print status
     else:
         status = "uptime " + str(r_uptime) + " state " + str(r_state)
-        write_status(status)
+        #write_status(status)
         print status
         msg = msg + ":Not status 4 "
        
+    write_status(status)
     write_log(msg)
 #=====================================================
 def getTopicHash(topic):
