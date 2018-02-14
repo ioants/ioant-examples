@@ -33,6 +33,15 @@ def write_status(status):
     except:
         print "ERROR write to status file"
     return
+#=====================================================
+def write_log(message):
+    try:
+        f = open("status.msg",'w')
+        f.write(message)
+        f.close()
+    except:
+        print "ERROR write to message file"
+    return
 
 #=====================================================
 def publishStepperMsg(steps, direction):
@@ -97,6 +106,9 @@ def heater_model():
     # READY  (all necessary data recieved)
     r_state = 2
 
+    msg = "2:"
+    
+    # Heater is on
     if temperature_smoke > g_minsmoke:
         r_uptime = r_uptime + 1
         if r_uptime > g_onofftime:
@@ -105,9 +117,11 @@ def heater_model():
         if r_uptime < g_onofftime:
             # STARTING  (the heater is on and under start-up )
             r_state = 3
+            msg = msg + ":3"
         if r_uptime == g_onofftime:
             # RUNNING  (the heater is on and max heated  )
             r_state = 4
+            msg = msg + ":4"
 
     # Heater is off
     else:
@@ -122,7 +136,7 @@ def heater_model():
         #print "coeff1 = " + str(coeff1) + " const = " + str(mconst1)
         #print "coeff2 = " + str(coeff2) + " const = " + str(mconst2)
         # Expected water out temperature from heater
-        if temperature_outdoor < 0:
+        if temperature_outdoor < g_x_0:
             y = coeff1*temperature_outdoor + mconst1
         else:
             y = coeff2*temperature_outdoor + mconst2
@@ -132,21 +146,24 @@ def heater_model():
             status = "Target heat to low " + str(y)
             write_status(status)
             y = g_minheat
+            msg = msg + ":Target temp to low"
 
         if y > g_maxheat:
             status = "Target heat to high " + str(y)
             write_status(status)
             y = g_maxheat
+            msg = msg + ":Target temp to high"
 
         # Energy outage
         energy = temperature_water_out - temperature_water_in
         steps = (int)(abs(y - temperature_water_out)*g_relax)
         if energy < 0 and y < temperature_water_out:
             steps = 0
+            msg = msg + ":Cooling is not possible"
 
         # Upper limit for steps in one order
         if steps > g_maxsteps:
-            status = "steps overflow " + str(steps)
+            msg = msg + ":Too many steps = " + str(steps)
             write_status(status)
             steps = g_defsteps
 
@@ -154,9 +171,11 @@ def heater_model():
             if(y > temperature_water_out):
                 direction = COUNTERCLOCKWISE
                 print "Direction is COUNTERCLOCKWISE (increase) " + str(steps)
+                msg = msg + ":Increase heat = " + str(steps)
             else:
                 direction = CLOCKWISE
                 print "Direction is CLOCKWISE (decrease) " + str(steps)
+                msg = msg + ":Decrease heat = " + str(steps)
 
             r_inertia = g_inertia
             publishStepperMsg(steps, direction)
@@ -168,6 +187,8 @@ def heater_model():
         status = "uptime " + str(r_uptime) + " state " + str(r_state)
         write_status(status)
         print status
+       
+    write_log(msg)
 #=====================================================
 def getTopicHash(topic):
     res = topic['top'] + topic['global'] + topic['local'] + topic['client_id'] + str(topic['message_type']) + str(topic['stream_index'])
