@@ -238,9 +238,9 @@ def setup(configuration):
 
     configuration = ioant.get_configuration()
 
-    g_minsteps = float(configuration["algorithm"]["minsteps"])
-    g_maxsteps = float(configuration["algorithm"]["maxsteps"])
-    g_defsteps = float(configuration["algorithm"]["defsteps"])
+    g_minsteps = int(configuration["algorithm"]["minsteps"])
+    g_maxsteps = int(configuration["algorithm"]["maxsteps"])
+    g_defsteps = int(configuration["algorithm"]["defsteps"])
 
     g_minsmoke = float(configuration["algorithm"]["minsmoke"])
 
@@ -253,9 +253,9 @@ def setup(configuration):
     g_x_0 = float(configuration["algorithm"]["x_0"])
     g_y_0 = float(configuration["algorithm"]["y_0"])
 
-    g_onofftime = float(configuration["algorithm"]["onofftime"])
+    g_onofftime = int(configuration["algorithm"]["onofftime"])
 
-    g_inertia = float(configuration["algorithm"]["inertia"])
+    g_inertia = int(configuration["algorithm"]["inertia"])
 
     g_relax = float(configuration["algorithm"]["relax"])
 
