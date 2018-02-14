@@ -140,9 +140,8 @@ def heater_model():
 
         # Energy outage
         energy = temperature_water_out - temperature_water_in
-        if energy > 0:
-            steps = (int)(abs(y - temperature_water_out)*g_relax)
-        elif y < temperature_water_out:
+        steps = (int)(abs(y - temperature_water_out)*g_relax)
+        if energy < 0 and y < temperature_water_out:
             steps = 0
 
         # Upper limit for steps in one order
