@@ -36,7 +36,7 @@ def write_status(status):
 #=====================================================
 def write_log(message):
     try:
-        f = open("status.msg",'w')
+        f = open("status.msg",'a')
         f.write(message)
         f.close()
     except:
@@ -106,7 +106,7 @@ def heater_model():
     # READY  (all necessary data recieved)
     r_state = 2
 
-    msg = "2:"
+    msg = ">2"
     
     # Heater is on
     if temperature_smoke > g_minsmoke:
