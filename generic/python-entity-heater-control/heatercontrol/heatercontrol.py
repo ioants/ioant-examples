@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-02-13
+# Date: 2018-02-14
 # Description: IOANT heater control algorithm
 # =============================================
 from ioant.sdk import IOAnt
@@ -142,7 +142,7 @@ def heater_model():
         energy = temperature_water_out - temperature_water_in
         if energy > 0:
             steps = (int)(abs(y - temperature_water_out)*g_relax)
-        else if y < temperature_water_out:
+        elif y < temperature_water_out:
             steps = 0
 
         # Upper limit for steps in one order
