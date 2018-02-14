@@ -38,6 +38,7 @@ def write_log(message):
     try:
         f = open("status.msg",'a')
         f.write(message)
+        f.write('\n')
         f.close()
     except:
         print "ERROR write to message file"
@@ -126,7 +127,7 @@ def heater_model():
     # Heater is off
     else:
         r_uptime = r_uptime -1
-
+        msg = msg + ":Heater is off"
         if r_uptime < 1:
             r_uptime = 0
 
@@ -180,6 +181,7 @@ def heater_model():
             r_inertia = g_inertia
             publishStepperMsg(steps, direction)
         else:
+            msg = msg + ":Min steps or interia = " + str(steps) + " " + str(r_inertia)
             status = str(r_uptime) + " state " + str(r_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
             write_status(status)
             print status
@@ -187,6 +189,7 @@ def heater_model():
         status = "uptime " + str(r_uptime) + " state " + str(r_state)
         write_status(status)
         print status
+        msg = msg + ":Not status 4 "
        
     write_log(msg)
 #=====================================================
