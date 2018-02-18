@@ -1,7 +1,7 @@
 # =============================================
 # Application: NILM Analysis
 # Author: Benny Saxen
-# Date: 2018-01-20
+# Date: 2018-02-18
 # Description:
 # =============================================
 from ioant.sdk import IOAnt
@@ -13,7 +13,9 @@ new_value = 0.0
 ackum = 0.0
 buf = []
 bufSize = 86400
+DEVMAX = 12
 freq = []
+coeff = []
 
 trans = []
 index = []
@@ -88,12 +90,15 @@ def addCircBuf(value):
 #======================================================================
 def calcDevices():
     global buf,freq,trans,index,sumint,mx
-    global bufSize
+    global bufSize,coeff,DEVMAX
 
     fmax = 0
 
     for i in range(0,9000):
         freq[i] = 0
+
+    for i in range(0,DEVMAX):
+        coeff[i] = 0.0
 
     for i in range(0,bufSize):
         ix = int(buf[i]/100)
@@ -110,7 +115,7 @@ def calcDevices():
             #print i
     file.close()
 #-----------------------------------
-    for n_devices in range(1,12):
+    for n_devices in range(1,DEVMAX):
 #-----------------------------------
 # Init
         tmax = 0
@@ -144,9 +149,6 @@ def calcDevices():
             file.write("%d %d\n" % (index[i],trans[i]))
         file.close()
 
-        for k in range(n_devices):
-            print ("Device %d %d" % (k,index[k]))
-            #print "================"
         for i in range(2**n_devices):
             bb = dec_to_bin(i)
             sumint[i] = 0
@@ -168,11 +170,24 @@ def calcDevices():
     #print ("%d tot=%d hit=%d" % (n_devices,tot,hit))
         if tot > 0:
             ftemp =  float(hit)/float(tot)
-            print ("====> %d %f tot=%f hit=%f" % (n_devices,ftemp,tot,hit))
+            coeff[n_devices] = ftemp
+            if ftemp < 1.1:
+                print ("====> %d %f tot=%f hit=%f" % (n_devices,ftemp,tot,hit))
+                for k in range(n_devices):
+                    if index[k] > 0:
+                        print ("devices %d %d00 W" % (k,index[k]))
+    # end n_devices
+
+    file = open("coeff.work", "w")
+    for i in range(1,DEVMAX):
+        file.write("%d %f\n" % (i,coeff[i]))
+    file.close()
+
 #======================================================================
 def setup(configuration):
-    global buf,freq
+    global buf,freq,coeff
     global bufSize
+    global DEVMAX
 
     for i in range(0,bufSize):
         buf.append(0)
@@ -183,6 +198,9 @@ def setup(configuration):
         index.append(0)
         sumint.append(0)
         mx.append(0)
+
+    for i in range(0,DEVMAX):
+        coeff.append(0)
 
     """ setup function """
     ioant.setup(configuration)
@@ -197,7 +215,7 @@ def on_message(topic, message):
     global ackum
     prev_value = new_value
     new_value = message.value
-    print "----------------"
+    print "------start----------"
     print new_value
     addCircBuf(new_value)
     calcDevices()
@@ -206,6 +224,7 @@ def on_message(topic, message):
         #ackum = ackum + delta
         #print delta
         #print ackum
+    print "------end----------"
 #======================================================================
 def on_connect():
     """ On connect function. Called when connected to broker """
