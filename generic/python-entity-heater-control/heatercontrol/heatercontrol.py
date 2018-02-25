@@ -37,10 +37,11 @@ def write_status(status):
 def write_position(pos):
     try:
         f = open("position.work",'w')
-        f.write(pos)
+        s = str(pos)
+        f.write(s)
         f.close()
     except:
-        print "ERROR write to status file"
+        print "ERROR write to position file"
     return
 #=====================================================
 def read_position():
