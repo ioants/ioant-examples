@@ -54,6 +54,7 @@ def read_position():
         s = str(0)
         f.write(s)
         f.close()
+        pos = 1
     return pos
 #=====================================================
 def write_log(message):
