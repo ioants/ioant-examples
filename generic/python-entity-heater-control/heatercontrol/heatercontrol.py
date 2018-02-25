@@ -131,8 +131,8 @@ def heater_model():
         return
 
     # READY  (all necessary data recieved)
-    #r_state = 2
-    msg = "\n >2"
+    r_state = 1
+    msg = "\n state=1"
     
     # Heater is on
     if temperature_smoke > g_minsmoke:
@@ -151,6 +151,7 @@ def heater_model():
 
     # Heater is off
     else:
+        r_state = 2
         r_uptime = r_uptime -1
         msg = msg + ":Heater is off"
         if r_uptime < 1:
