@@ -220,6 +220,7 @@ def heater_model():
                 r_inertia = g_inertia
                 write_position(g_stepperpos)
                 publishStepperMsg(steps, direction)
+                status = "Stepper moved"
         else:
             msg = msg + ":Min steps or inertia = " + str(steps) + " " + str(r_inertia)
             status = str(r_uptime) + " state " + str(r_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
