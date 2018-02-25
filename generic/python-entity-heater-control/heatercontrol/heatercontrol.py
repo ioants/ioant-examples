@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-02-14
+# Date: 2018-02-25
 # Description: IOANT heater control algorithm
 # =============================================
 from ioant.sdk import IOAnt
@@ -79,6 +79,12 @@ def heater_model():
     global r_uptime
     global r_state
     global r_inertia
+    
+    global temperature_indoor
+    global temperature_outdoor
+    global temperature_water_in
+    global temperature_water_out
+    global temperature_smoke
 
     CLOCKWISE = 0
     COUNTERCLOCKWISE = 1
@@ -89,12 +95,7 @@ def heater_model():
     coeff2 = (g_y_0 - g_minheat)/(g_x_0 - g_maxtemp)
     mconst2 = g_minheat - coeff2*g_maxtemp
 
-    global temperature_indoor
-    global temperature_outdoor
-    global temperature_water_in
-    global temperature_water_out
-    global temperature_smoke
-
+    # If necessary data not available: do nothing
     if temperature_outdoor == 999:
         return
     if temperature_water_out == 999:
@@ -105,9 +106,8 @@ def heater_model():
         return
 
     # READY  (all necessary data recieved)
-    r_state = 2
-
-    msg = ">2"
+    #r_state = 2
+    msg = "\n >2"
     
     # Heater is on
     if temperature_smoke > g_minsmoke:
@@ -134,6 +134,10 @@ def heater_model():
             
     # RUNNING  (the heater is on and max heated  )
     if r_state == 4:
+        if temperature_outdoor > g_maxtemp:
+            temperature_outdoor = g_maxtemp
+        if temperature_outdoor < g_mintemp:
+            temperature_outdoor = g_mintemp        
         #print "coeff1 = " + str(coeff1) + " const = " + str(mconst1)
         #print "coeff2 = " + str(coeff2) + " const = " + str(mconst2)
         # Expected water out temperature from heater
