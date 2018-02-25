@@ -34,6 +34,28 @@ def write_status(status):
         print "ERROR write to status file"
     return
 #=====================================================
+def write_position(pos):
+    try:
+        f = open("position.work",'w')
+        f.write(pos)
+        f.close()
+    except:
+        print "ERROR write to status file"
+    return
+#=====================================================
+def read_position():
+    try:
+        f = open("position.work",'r')
+        pos = int(f.read())
+        f.close()
+    except:
+        print("WARNING Create position file")
+        f = open("position.work",'w')
+        s = str(0)
+        f.write(s)
+        f.close()
+    return pos
+#=====================================================
 def write_log(message):
     try:
         f = open("status.work",'a')
@@ -194,6 +216,7 @@ def heater_model():
                 msg = msg + ":Stepper Position = " + str(g_stepperpos)
                 write_log(msg)
                 r_inertia = g_inertia
+                write_position(g_stepperpos)
                 publishStepperMsg(steps, direction)
         else:
             msg = msg + ":Min steps or inertia = " + str(steps) + " " + str(r_inertia)
@@ -262,6 +285,8 @@ def setup(configuration):
     g_relax = 3.0
     g_inertia = 130
     g_stepperpos = 0
+    
+    g_stepperpos = read_position()
 
     global temperature_indoor
     global temperature_outdoor
