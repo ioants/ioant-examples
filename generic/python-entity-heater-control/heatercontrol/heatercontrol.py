@@ -177,10 +177,12 @@ def heater_model():
                 direction = COUNTERCLOCKWISE
                 print "Direction is COUNTERCLOCKWISE (increase) " + str(steps)
                 msg = msg + ":Increase heat = " + str(steps)
+                write_log(msg)
             else:
                 direction = CLOCKWISE
                 print "Direction is CLOCKWISE (decrease) " + str(steps)
                 msg = msg + ":Decrease heat = " + str(steps)
+                write_log(msg)
 
             r_inertia = g_inertia
             publishStepperMsg(steps, direction)
@@ -196,7 +198,7 @@ def heater_model():
         msg = msg + ":Not status 4 "
        
     write_status(status)
-    write_log(msg)
+ 
 #=====================================================
 def getTopicHash(topic):
     res = topic['top'] + topic['global'] + topic['local'] + topic['client_id'] + str(topic['message_type']) + str(topic['stream_index'])
