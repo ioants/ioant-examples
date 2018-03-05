@@ -1,8 +1,9 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-02-25
+# Date: 2018-05-05
 # Description: IOANT heater control algorithm
+# 90 degrees <=> 1152/4 steps = 288
 # =============================================
 from ioant.sdk import IOAnt
 import logging
@@ -55,7 +56,7 @@ def read_position():
         s = str(0)
         f.write(s)
         f.close()
-        pos = 1
+        pos = 0
     return pos
 #=====================================================
 def write_log(message):
@@ -70,9 +71,11 @@ def write_log(message):
 
 #=====================================================
 def publishStepperMsg(steps, direction):
+    global g_stepperpos
     print "ORDER steps to move: "+str(steps) + " dir:" + str(direction)
     #return
-    if steps > 100:
+    if steps > 300:
+        print "Too many steps "+str(steps)
         return
     configuration = ioant.get_configuration()
     out_msg = ioant.create_message("RunStepperMotorRaw")
@@ -87,6 +90,8 @@ def publishStepperMsg(steps, direction):
     topic['client_id'] = configuration["publish_topic"]["stepper"]["client_id"]
     topic['stream_index'] = 0
     ioant.publish(out_msg, topic)
+
+    write_position(g_stepperpos)
 
 #=====================================================
 def heater_model():
@@ -104,7 +109,7 @@ def heater_model():
     global r_uptime
     global r_state
     global r_inertia
-    
+
     global temperature_indoor
     global temperature_outdoor
     global temperature_water_in
@@ -133,7 +138,7 @@ def heater_model():
     # READY  (all necessary data recieved)
     r_state = 1
     msg = "\n state=1"
-    
+
     # Heater is on
     if temperature_smoke > g_minsmoke:
         r_uptime = r_uptime + 1
@@ -156,14 +161,18 @@ def heater_model():
         msg = msg + ":Heater is off"
         if r_uptime < 1:
             r_uptime = 0
+            if g_stepperpos > 0:
+                    publishStepperMsg(g_stepperpos, CLOCKWISE)
+                    g_stepperpos = 0
+                    status = "Stepper position reset to 0"
 
-            
+
     # RUNNING  (the heater is on and max heated  )
     if r_state == 4:
         if temperature_outdoor > g_maxtemp:
             temperature_outdoor = g_maxtemp
         if temperature_outdoor < g_mintemp:
-            temperature_outdoor = g_mintemp        
+            temperature_outdoor = g_mintemp
         #print "coeff1 = " + str(coeff1) + " const = " + str(mconst1)
         #print "coeff2 = " + str(coeff2) + " const = " + str(mconst2)
         # Expected water out temperature from heater
@@ -197,35 +206,34 @@ def heater_model():
             msg = msg + ":Too many steps = " + str(steps)
             #write_status(status)
             steps = g_defsteps
-            
+
         if steps > g_minsteps and temperature_smoke > g_minsmoke and r_inertia == 0:
             ok = 0
             if(y > temperature_water_out):
                 direction = COUNTERCLOCKWISE
                 print "Direction is COUNTERCLOCKWISE (increase) " + str(steps)
                 msg = msg + ":Increase heat = " + str(steps)
-                if g_stepperpos < 240:
+                if g_stepperpos < 288:
                     g_stepperpos = g_stepperpos + steps
-                    ok = 1;       
+                    ok = 1;
             else:
                 direction = CLOCKWISE
                 print "Direction is CLOCKWISE (decrease) " + str(steps)
                 msg = msg + ":Decrease heat = " + str(steps)
                 if g_stepperpos > 0:
                     g_stepperpos = g_stepperpos - steps
-                    ok = 1; 
-            
+                    ok = 1;
+
             if ok == 1:
                 msg = msg + ":Stepper Position = " + str(g_stepperpos)
                 write_log(msg)
                 r_inertia = g_inertia
-                write_position(g_stepperpos)
                 publishStepperMsg(steps, direction)
                 status = "Stepper moved"
         else:
             msg = msg + ":Min steps or inertia = " + str(steps) + " " + str(r_inertia)
             status = str(r_uptime) + " state " + str(r_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
-            status = status + "Pos=" + str(g_stepperpos) 
+            status = status + "Pos=" + str(g_stepperpos)
             #write_status(status)
             print status
     else:
@@ -233,9 +241,9 @@ def heater_model():
         #write_status(status)
         print status
         msg = msg + ":Not status 4 "
-       
+
     write_status(status)
- 
+
 #=====================================================
 def getTopicHash(topic):
     res = topic['top'] + topic['global'] + topic['local'] + topic['client_id'] + str(topic['message_type']) + str(topic['stream_index'])
@@ -289,7 +297,7 @@ def setup(configuration):
     g_relax = 3.0
     g_inertia = 130
     g_stepperpos = 0
-    
+
     g_stepperpos = read_position()
 
     global temperature_indoor
