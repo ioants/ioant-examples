@@ -1,8 +1,8 @@
 ///
 /// @file   main.cpp
 /// @Author Benny Saxen
-/// @date   2016-12-25
-/// A-102-visualCollector
+/// @date   2017-10-23
+/// VisualCollector
 /// @brief  Visual Indicators for MQTT traffic
 ///
 
@@ -30,7 +30,7 @@ void blinkLed(int led, int delay_between_blink);
 /// END OF - Custom function definitions
 
 ///. CUSTOM variables
-int g_redLed1 = 5; // D1
+int g_redLed1  = 5; // D1
 int g_redLed2  = 4; // D2
 int g_redLed3  = 12; // D6
 int g_redLed4  = 14; // D5
@@ -46,8 +46,8 @@ void setup(void){
     pinMode(g_redLed4, OUTPUT);
     pinMode(g_redLed5, OUTPUT);
     Ioant::Topic t;
-    t.global = "global";
-    t.local = "local";
+    t.global = "+";
+    //t.local = "local";
     IOANT->Subscribe(t);
 }
 
@@ -56,17 +56,17 @@ void loop(void){
 }
 
 void on_message(Ioant::Topic received_topic, ProtoIO* message){
-    ULOG_DEBUG << received_topic.client_id;
+    ULOG_DEBUG << received_topic.message_type;
 
-    if(received_topic.client_id == "c1")
+    if(received_topic.message_type == 0)
         blinkLed(g_redLed1,10);
-    else if(received_topic.client_id == "c2")
+    else if(received_topic.message_type == 1)
         blinkLed(g_redLed2,10);
-    else if(received_topic.client_id == "c3")
+    else if(received_topic.message_type == 3)
         blinkLed(g_redLed3,10);
-    else if(received_topic.client_id == "c4")
+    else if(received_topic.message_type == 4)
         blinkLed(g_redLed4,10);
-    else if(received_topic.client_id == "c5")
+    else if(received_topic.message_type == 8)
         blinkLed(g_redLed5,10);
 }
 

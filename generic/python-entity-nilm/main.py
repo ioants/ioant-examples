@@ -1,4 +1,4 @@
-import heatercontrol.heatercontrol as control
+import device.application as app
 import sys
 import ioant.utils as utils
 import os
@@ -15,14 +15,16 @@ logging.getLogger('').addHandler(console)
 def init_ascii():
     message = "\
 =========================================================================\n\
-|                      Heater Control Entity                            |\n\
+|                      NILM Analysis                                    |\n\
 ========================================================================="
     return message
 
 
+relative_path_steps = "../../../../../"
+
 if __name__ == "__main__":
     print(init_ascii())
-    logging.info('Starting entity heater control')
+    logging.info('Starting...')
     script_dir = os.path.dirname(os.path.realpath(__file__))
     argument_list = sys.argv
     number_of_arguments = len(sys.argv)
@@ -35,7 +37,7 @@ if __name__ == "__main__":
                                                        'configuration.json')
 
     configuration = utils.fetch_json_file_as_dict(configuration_path)
-    control.setup(configuration)
+    app.setup(configuration)
     while True:
-        control.loop()
+        app.loop()
     sys.exit()
