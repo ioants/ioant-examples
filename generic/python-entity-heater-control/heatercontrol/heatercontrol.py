@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-05-05
+# Date: 2018-03-16
 # Description: IOANT heater control algorithm
 # 90 degrees <=> 1152/4 steps = 288
 # =============================================
@@ -74,7 +74,7 @@ def publishStepperMsg(steps, direction):
     global g_stepperpos
     print "ORDER steps to move: "+str(steps) + " dir:" + str(direction)
     #return
-    if steps > 300:
+    if steps > 500: # same limit as stepper device
         print "Too many steps "+str(steps)
         return
     configuration = ioant.get_configuration()
@@ -213,8 +213,9 @@ def heater_model():
                 direction = COUNTERCLOCKWISE
                 print "Direction is COUNTERCLOCKWISE (increase) " + str(steps)
                 msg = msg + ":Increase heat = " + str(steps)
-                if g_stepperpos < 288:
-                    g_stepperpos = g_stepperpos + steps
+                slimit = g_stepperpos + steps
+                if slimit < 288:
+                    g_stepperpos = slimit
                     ok = 1;
             else:
                 direction = CLOCKWISE
