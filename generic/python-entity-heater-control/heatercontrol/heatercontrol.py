@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-03-16
+# Date: 2018-03-18
 # Description: IOANT heater control algorithm
 # 90 degrees <=> 1152/4 steps = 288
 # =============================================
@@ -209,7 +209,7 @@ def heater_model():
 
         if steps > g_minsteps and temperature_smoke > g_minsmoke and r_inertia == 0:
             ok = 0
-            if(y > temperature_water_out):
+            if(y > temperature_water_out and temperature_indoor < 20):
                 direction = COUNTERCLOCKWISE
                 print "Direction is COUNTERCLOCKWISE (increase) " + str(steps)
                 msg = msg + ":Increase heat = " + str(steps)
