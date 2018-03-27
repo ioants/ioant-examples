@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-03-18
+# Date: 2018-03-27
 # Description: IOANT heater control algorithm
 # 90 degrees <=> 1152/4 steps = 288
 # =============================================
@@ -10,6 +10,39 @@ import logging
 import hashlib
 import math
 logger = logging.getLogger(__name__)
+
+#===================================================
+def spacecollapse_op1 ( label, typ, value ):
+#===================================================
+	url = 'http://spacecollapse.simuino.com/scServer.php'
+	data = {}
+	data['op'] = 1
+	data['label'] = label
+	data['type'] = typ
+	data['value'] = value
+
+	values = urllib.urlencode(data)
+	req = url + '?' + values
+	try: response = urllib2.urlopen(req)
+	except urllib2.URLError as e:
+		print e.reason
+	the_page = response.read()
+
+#===================================================
+def spacecollapse_op2 ( label, param ):
+#===================================================
+	url = 'http://spacecollapse.simuino.com/scServer.php'
+	data = {}
+	data['op'] = 2
+	data['label'] = label
+	data['param'] = param
+
+	values = urllib.urlencode(data)
+	req = url + '?' + values
+	try: response = urllib2.urlopen(req)
+	except urllib2.URLError as e:
+		print e.reason
+	the_page = response.read()
 
 #=====================================================
 def read_status():
@@ -31,6 +64,7 @@ def write_status(status):
         f = open("status.work",'w')
         f.write(status)
         f.close()
+        spacecollapse_op1('kil_kvv32_heatercontrol_status','status',status)
     except:
         print "ERROR write to status file"
     return
@@ -41,6 +75,7 @@ def write_position(pos):
         s = str(pos)
         f.write(s)
         f.close()
+        spacecollapse_op1('kil_kvv32_heatercontrol_position','position', pos)
     except:
         print "ERROR write to position file"
     return
