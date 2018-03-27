@@ -9,6 +9,9 @@ from ioant.sdk import IOAnt
 import logging
 import hashlib
 import math
+import urllib
+import urllib2
+
 logger = logging.getLogger(__name__)
 
 #===================================================
@@ -64,7 +67,6 @@ def write_status(status):
         f = open("status.work",'w')
         f.write(status)
         f.close()
-        spacecollapse_op1('kil_kvv32_heatercontrol_status','status',status)
     except:
         print "ERROR write to status file"
     return
@@ -75,7 +77,6 @@ def write_position(pos):
         s = str(pos)
         f.write(s)
         f.close()
-        spacecollapse_op1('kil_kvv32_heatercontrol_position','position', pos)
     except:
         print "ERROR write to position file"
     return
@@ -278,7 +279,16 @@ def heater_model():
         print status
         msg = msg + ":Not status 4 "
 
+    spacecollapse_op1('kil_kvv32_heatercontrol_status','status', r_state)
+    spacecollapse_op1('kil_kvv32_heatercontrol_position','position', g_stepperpos)
+    spacecollapse_op1('kil_kvv32_heatercontrol_inertia','inertia', r_inertia)
+    spacecollapse_op1('kil_kvv32_heatercontrol_uptime','uptime', r_uptime)
+    spacecollapse_op1('kil_kvv32_heatercontrol_target','target', y)
+    spacecollapse_op1('kil_kvv32_heatercontrol_steps','steps', steps)
+    spacecollapse_op1('kil_kvv32_heatercontrol_energy','energy', energy)
     write_status(status)
+
+
 
 #=====================================================
 def getTopicHash(topic):
@@ -378,6 +388,15 @@ def setup(configuration):
     r_state = 1
     r_inertia = g_inertia
     r_uptime = g_onofftime
+
+    spacecollapse_op1('kil_kvv32_heatercontrol_status','status', r_state)
+    spacecollapse_op1('kil_kvv32_heatercontrol_position','position', g_stepperpos)
+    spacecollapse_op1('kil_kvv32_heatercontrol_inertia','inertia', r_inertia)
+    spacecollapse_op1('kil_kvv32_heatercontrol_uptime','uptime', r_uptime)
+    spacecollapse_op1('kil_kvv32_heatercontrol_target','target', 0)
+    spacecollapse_op1('kil_kvv32_heatercontrol_steps','steps', 0)
+    spacecollapse_op1('kil_kvv32_heatercontrol_energy','energy', 0)
+
 #=====================================================
 def loop():
     global r_inertia
