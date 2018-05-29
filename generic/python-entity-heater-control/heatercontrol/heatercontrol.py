@@ -174,6 +174,7 @@ def heater_model():
     # READY  (all necessary data recieved)
     r_state = 1
     msg = "\n state=1"
+    status = "Init "
 
     # Heater is on
     if temperature_smoke > g_minsmoke:
