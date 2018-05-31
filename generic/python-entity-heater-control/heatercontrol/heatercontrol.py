@@ -433,7 +433,7 @@ def setup(configuration):
     spacecollapse_op1('kil_kvv32_heatercontrol_steps','steps', 0)
     spacecollapse_op1('kil_kvv32_heatercontrol_energy','energy', 0)
 
-	init_log()
+    init_log()
 
 #=====================================================
 def loop():
