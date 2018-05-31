@@ -48,20 +48,6 @@ def spacecollapse_op2 ( label, param ):
 	the_page = response.read()
 
 #=====================================================
-def read_status():
-    try:
-        f = open("status.work",'r')
-        pos = int(f.read())
-        f.close()
-    except:
-        print("WARNING Create status file")
-        f = open("status.work",'w')
-        s = str(0)
-        f.write(s)
-        f.close()
-    return
-
-#=====================================================
 def write_status(status):
     try:
         f = open("status.work",'w')
@@ -97,12 +83,23 @@ def read_position():
 #=====================================================
 def write_log(message):
     try:
-        f = open("status.work",'a')
+        f = open("log.work",'a')
         f.write(message)
         f.write('\n')
         f.close()
     except:
-        print "ERROR write to message file"
+        print "ERROR write to log file"
+    return
+
+#=====================================================
+def init_log():
+    try:
+        f = open("log.work",'w')
+        f.write("===== Log =====")
+        f.write('\n')
+        f.close()
+    except:
+        print "ERROR init log file"
     return
 
 #=====================================================
@@ -161,55 +158,86 @@ def heater_model():
     coeff2 = (g_y_0 - g_minheat)/(g_x_0 - g_maxtemp)
     mconst2 = g_minheat - coeff2*g_maxtemp
 
+	r_state = 0
+
+	write_log("===== Heater Model =====")
+
     # If necessary data not available: do nothing
+	ndi = 0
     if temperature_outdoor == 999:
-        return
+		message = "No data - temperature_outdoor RETURN"
+		write_log(message)
+		ndi = ndi + 1
+
     if temperature_water_out == 999:
-        return
+		message = "No data - temperature_water_out RETURN"
+		write_log(message)
+		ndi = ndi + 1
+
     if temperature_water_in == 999:
-        return
+		message = "No data - temperature_water_in RETURN"
+		write_log(message)
+		ndi = ndi + 1
+
     if temperature_smoke == 999:
-        return
+		message = "No data - temperature_smoke RETURN"
+		write_log(message)
+		ndi = ndi + 1
+
 
     #====== All necessary data recieved
-    r_state = 1
-    msg = "\n state=1"
-    status = ": "
+    if ndi == 0:
+		r_state = 1
 
+#========================================================
+# All input data available. Find status of heater
+	if r_state == 1:
+#========================================================
+		write_log("Enter state 1")
     #====== Heater is on
-    if temperature_smoke > g_minsmoke:
-        r_uptime = r_uptime + 1
-        if r_uptime > g_onofftime:
-            r_uptime = g_onofftime
-        # RUNNING  (the heater is on and  )
-        if r_uptime < g_onofftime:
-            # STARTING  (the heater is on and under start-up )
-            r_state = 3
-            msg = msg + ":3"
-        if r_uptime == g_onofftime:
-            # RUNNING  (the heater is on and max heated  )
-            r_state = 4
-            msg = msg + ":4"
+    	if temperature_smoke > g_minsmoke:
+        	r_uptime = r_uptime + 1
+        	if r_uptime > g_onofftime:
+            	r_uptime = g_onofftime
 
-    # Heater is off
-    else:
-        r_state = 2
-        r_uptime = r_uptime -1
-        msg = msg + ":Heater is off"
-        if r_uptime < 1:
-            r_uptime = 0
-            if g_stepperpos > 0:
-                    publishStepperMsg(g_stepperpos, CLOCKWISE)
-                    g_stepperpos = 0
-                    status = "Stepper position reset to 0"
+        	if r_uptime < g_onofftime:
+            	r_state = 3
+        	if r_uptime == g_onofftime:
+            	r_state = 4
 
+    	# Heater is off
+    	else:
+        	r_state = 2
 
-    #====== The heater is on and max heated 
-    if r_state == 4:
+#========================================================
+# Heater is OFF
+	if r_state == 2:
+#========================================================
+		write_log("Enter state 2")
+		r_uptime = r_uptime -1
+		if r_uptime < 1:
+			r_uptime = 0
+		    if g_stepperpos > 0:
+		    	publishStepperMsg(g_stepperpos, CLOCKWISE)
+		        g_stepperpos = 0
+				write_log("Stepper position reset to 0")
+
+#========================================================
+# Heater starting up
+	if r_state == 3:
+#========================================================
+		write_log("Enter state 3")
+#========================================================
+# The heater is on and max heated
+	if r_state == 4:
+#========================================================
+		write_log("Enter state 4")
         if temperature_outdoor > g_maxtemp:
             temperature_outdoor = g_maxtemp
+			write_log("Max limit reached - temperature_outdoor")
         if temperature_outdoor < g_mintemp:
             temperature_outdoor = g_mintemp
+			write_log("Min limit reached - temperature_outdoor")
         #print "coeff1 = " + str(coeff1) + " const = " + str(mconst1)
         #print "coeff2 = " + str(coeff2) + " const = " + str(mconst2)
         # Expected water out temperature from heater
@@ -220,29 +248,37 @@ def heater_model():
 
         # if target temperature is below typical indoor temperature - do nothing
         if y < g_minheat:
-            status = "Target heat to low " + str(y)
-            #write_status(status)
+            msg = "Target temperature to low " + str(y)
+			write_log(msg)
             y = g_minheat
-            msg = msg + ":Target temp to low"
 
         if y > g_maxheat:
-            status = "Target heat to high " + str(y)
-            #write_status(status)
+            msg = "Target temperature to high " + str(y)
+			write_log(msg)
             y = g_maxheat
-            msg = msg + ":Target temp to high"
 
         # Energy outage
         energy = temperature_water_out - temperature_water_in
         steps = (int)(abs(y - temperature_water_out)*g_relax)
-	
+		if y > temperature_water_out:
+			write_log("Increase heater ")
+		if y < temperature_water_out:
+			write_log("Decrease heater ")
+
         if energy < 0 and y < temperature_water_out:
             steps = 0
-            msg = msg + ":Cooling is not possible"
+            write_log("Negative energy - cooling not possible - RETURN")
+			return
 
         # Restrict steps to max Steps
         if steps > g_maxsteps:
-            msg = msg + ":Too many steps = " + str(steps)
-            #write_status(status)
+            msg = "Upper step limit reached = " + str(steps)
+			write_log(msg)
+            steps = g_defsteps
+        # Restrict steps to max Steps
+        if steps < g_minsteps:
+            msg = "Lower step limit reached = " + str(steps)
+			write_log(msg)
             steps = g_defsteps
 
 	# steps - ok, smoke temp - ok, inertia - ok
@@ -257,6 +293,7 @@ def heater_model():
                 if slimit < 288:
                     g_stepperpos = slimit
                     ok = 1;
+					write_log("Stepper moved COUNTERCLOCKWISE")
             else:
                 direction = CLOCKWISE
                 print "Direction is CLOCKWISE (decrease) " + str(steps)
@@ -264,25 +301,19 @@ def heater_model():
                 if g_stepperpos > 0:
                     g_stepperpos = g_stepperpos - steps
                     ok = 1;
-			
+					write_log("Stepper moved CLOCKWISE")
+
             # Execute order to stepper motor
             if ok == 1:
-                msg = msg + ":Stepper Position = " + str(g_stepperpos)
-                write_log(msg)
                 r_inertia = g_inertia
                 publishStepperMsg(steps, direction)
-                status = "Stepper moved"
-        else:
-            msg = msg + ":Min steps or inertia = " + str(steps) + " " + str(r_inertia)
-            status = str(r_uptime) + " state " + str(r_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
-            status = status + "Pos=" + str(g_stepperpos)
-            #write_status(status)
-            print status
-    else:
-        status = "uptime " + str(r_uptime) + " state " + str(r_state)
-        #write_status(status)
-        print status
-        msg = msg + ":Not status 4 "
+
+
+#========================================================================
+    status = str(r_uptime) + " state " + str(r_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
+    status = status + "Pos=" + str(g_stepperpos)
+    print status
+	write_log(status)
 
     spacecollapse_op1('kil_kvv32_heatercontrol_status','status', r_state)
     spacecollapse_op1('kil_kvv32_heatercontrol_position','position', g_stepperpos)
@@ -291,9 +322,8 @@ def heater_model():
     spacecollapse_op1('kil_kvv32_heatercontrol_target','target', y)
     spacecollapse_op1('kil_kvv32_heatercontrol_steps','steps', steps)
     spacecollapse_op1('kil_kvv32_heatercontrol_energy','energy', energy)
-    status = status + str(r_state)
-    write_status(status)
 
+	return
 
 
 #=====================================================
@@ -391,7 +421,7 @@ def setup(configuration):
 
     g_relax = float(configuration["algorithm"]["relax"])
 
-    r_state = 1
+    r_state = 0
     r_inertia = g_inertia
     r_uptime = g_onofftime
 
@@ -402,6 +432,8 @@ def setup(configuration):
     spacecollapse_op1('kil_kvv32_heatercontrol_target','target', 0)
     spacecollapse_op1('kil_kvv32_heatercontrol_steps','steps', 0)
     spacecollapse_op1('kil_kvv32_heatercontrol_energy','energy', 0)
+
+	init_log()
 
 #=====================================================
 def loop():
