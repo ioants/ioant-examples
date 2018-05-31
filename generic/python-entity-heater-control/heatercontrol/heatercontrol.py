@@ -236,6 +236,8 @@ def heater_model():
     if r_state == 4:
 #========================================================
 	write_log("Enter state 4")
+	msg = str(temperature_outdoor) + " " + str(g_maxtemp)
+	write_log(msg)
 	if temperature_outdoor > g_maxtemp:
         	temperature_outdoor = g_maxtemp
 	        write_log("Max limit reached - temperature_outdoor")
