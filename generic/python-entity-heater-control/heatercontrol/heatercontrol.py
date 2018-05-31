@@ -160,6 +160,7 @@ def heater_model():
 
     r_state = 0
     y = 999
+    energy = 999
 
     write_log("===== Heater Model =====")
 
