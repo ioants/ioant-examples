@@ -238,18 +238,19 @@ def heater_model():
 	write_log("Enter state 4")
 	msg = str(temperature_outdoor) + " " + str(g_maxtemp)
 	write_log(msg)
+	t_temperature_outdoor = temperature_outdoor
 	if temperature_outdoor > g_maxtemp:
-        	temperature_outdoor = g_maxtemp
+        	t_temperature_outdoor = g_maxtemp
 	        write_log("Max limit reached - temperature_outdoor")
         if temperature_outdoor < g_mintemp:
-                temperature_outdoor = g_mintemp
+                t_temperature_outdoor = g_mintemp
 	        write_log("Min limit reached - temperature_outdoor")
 
         # Expected water out temperature from heater
-        if temperature_outdoor < g_x_0:
-                y = coeff1*temperature_outdoor + mconst1
+        if t_temperature_outdoor < g_x_0:
+                y = coeff1*t_temperature_outdoor + mconst1
         else:
-                y = coeff2*temperature_outdoor + mconst2
+                y = coeff2*t_temperature_outdoor + mconst2
 
         # if target temperature is below typical indoor temperature - do nothing
         if y < g_minheat:
@@ -443,12 +444,6 @@ def setup(configuration):
 #=====================================================
 def loop():
     global r_inertia
-    global temperature_indoor
-    global temperature_outdoor
-    global temperature_water_in
-    global temperature_water_out
-    global temperature_smoke
-    global temperature_target
 
     ioant.update_loop()
     if r_inertia > 0:
