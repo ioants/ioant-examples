@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-03-27
+# Date: 2018-05-31
 # Description: IOANT heater control algorithm
 # 90 degrees <=> 1152/4 steps = 288
 # =============================================
@@ -171,12 +171,12 @@ def heater_model():
     if temperature_smoke == 999:
         return
 
-    # READY  (all necessary data recieved)
+    #====== All necessary data recieved
     r_state = 1
     msg = "\n state=1"
-    status = "Init "
+    status = ": "
 
-    # Heater is on
+    #====== Heater is on
     if temperature_smoke > g_minsmoke:
         r_uptime = r_uptime + 1
         if r_uptime > g_onofftime:
@@ -204,7 +204,7 @@ def heater_model():
                     status = "Stepper position reset to 0"
 
 
-    # RUNNING  (the heater is on and max heated  )
+    #====== The heater is on and max heated 
     if r_state == 4:
         if temperature_outdoor > g_maxtemp:
             temperature_outdoor = g_maxtemp
@@ -234,18 +234,21 @@ def heater_model():
         # Energy outage
         energy = temperature_water_out - temperature_water_in
         steps = (int)(abs(y - temperature_water_out)*g_relax)
+	
         if energy < 0 and y < temperature_water_out:
             steps = 0
             msg = msg + ":Cooling is not possible"
 
-        # Upper limit for steps in one order
+        # Restrict steps to max Steps
         if steps > g_maxsteps:
             msg = msg + ":Too many steps = " + str(steps)
             #write_status(status)
             steps = g_defsteps
 
+	# steps - ok, smoke temp - ok, inertia - ok
         if steps > g_minsteps and temperature_smoke > g_minsmoke and r_inertia == 0:
             ok = 0
+	    # increase water-out-temp and indoor temp is below 20
             if(y > temperature_water_out and temperature_indoor < 20):
                 direction = COUNTERCLOCKWISE
                 print "Direction is COUNTERCLOCKWISE (increase) " + str(steps)
@@ -261,7 +264,8 @@ def heater_model():
                 if g_stepperpos > 0:
                     g_stepperpos = g_stepperpos - steps
                     ok = 1;
-
+			
+            # Execute order to stepper motor
             if ok == 1:
                 msg = msg + ":Stepper Position = " + str(g_stepperpos)
                 write_log(msg)
@@ -287,6 +291,7 @@ def heater_model():
     spacecollapse_op1('kil_kvv32_heatercontrol_target','target', y)
     spacecollapse_op1('kil_kvv32_heatercontrol_steps','steps', steps)
     spacecollapse_op1('kil_kvv32_heatercontrol_energy','energy', energy)
+    status = status + str(r_state)
     write_status(status)
 
 
