@@ -163,7 +163,7 @@ def heater_model():
     write_log("===== Heater Model =====")
 
     # If necessary data not available: do nothing
-	ndi = 0
+    ndi = 0
     if temperature_outdoor == 999:
 	message = "No data - temperature_outdoor RETURN"
 	write_log(message)
