@@ -168,22 +168,22 @@ def heater_model():
     # If necessary data not available: do nothing
     ndi = 0
     if temperature_outdoor == 999:
-	message = "No data - temperature_outdoor RETURN"
+	message = "No data - temperature_outdoor"
 	write_log(message)
 	ndi = ndi + 1
 
     if temperature_water_out == 999:
-	message = "No data - temperature_water_out RETURN"
+	message = "No data - temperature_water_out"
 	write_log(message)
 	ndi = ndi + 1
 
     if temperature_water_in == 999:
-	message = "No data - temperature_water_in RETURN"
+	message = "No data - temperature_water_in"
 	write_log(message)
 	ndi = ndi + 1
 
     if temperature_smoke == 999:
-	message = "No data - temperature_smoke RETURN"
+	message = "No data - temperature_smoke"
 	write_log(message)
 	ndi = ndi + 1
 
@@ -443,6 +443,13 @@ def setup(configuration):
 #=====================================================
 def loop():
     global r_inertia
+    global temperature_indoor
+    global temperature_outdoor
+    global temperature_water_in
+    global temperature_water_out
+    global temperature_smoke
+    global temperature_target
+
     ioant.update_loop()
     if r_inertia > 0:
         r_inertia -= 1
