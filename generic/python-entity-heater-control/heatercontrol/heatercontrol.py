@@ -302,6 +302,8 @@ def heater_model():
                     g_stepperpos = slimit
                     ok = 1;
 		    write_log("Stepper moved COUNTERCLOCKWISE")
+		else:
+		    write_log("Stepper position to high")
             else:
                 direction = CLOCKWISE
                 print "Direction is CLOCKWISE (decrease) " + str(steps)
@@ -311,6 +313,8 @@ def heater_model():
                     g_stepperpos = g_stepperpos - steps
                     ok = 1;
 		    write_log("Stepper moved CLOCKWISE")
+		else:
+		    write_log("Stepper position to low")
 
             # Execute order to stepper motor
             if ok == 1:
