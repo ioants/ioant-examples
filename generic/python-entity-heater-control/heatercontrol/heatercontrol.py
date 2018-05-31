@@ -294,7 +294,6 @@ def heater_model():
 	    # increase water-out-temp and indoor temp is below 20
             if(y > temperature_water_out and temperature_indoor < 20):
                 direction = COUNTERCLOCKWISE
-                print "Direction is COUNTERCLOCKWISE (increase) " + str(steps)
                 msg = "Intention: Increase heat = " + str(steps)
 		write_log(msg)
                 slimit = g_stepperpos + steps
@@ -306,7 +305,6 @@ def heater_model():
 		    write_log("Stepper position to high")
             else:
                 direction = CLOCKWISE
-                print "Direction is CLOCKWISE (decrease) " + str(steps)
                 msg = "Intention: Decrease heat = " + str(steps)
 		write_log(msg)
                 if g_stepperpos > 0:
