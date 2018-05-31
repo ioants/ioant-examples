@@ -149,6 +149,8 @@ def heater_model():
     global temperature_water_out
     global temperature_smoke
 
+    init_log()
+
     CLOCKWISE = 0
     COUNTERCLOCKWISE = 1
 
@@ -236,8 +238,7 @@ def heater_model():
     if r_state == 4:
 #========================================================
 	write_log("Enter state 4")
-	msg = str(temperature_outdoor) + " " + str(g_maxtemp)
-	write_log(msg)
+
 	t_temperature_outdoor = temperature_outdoor
 	if temperature_outdoor > g_maxtemp:
         	t_temperature_outdoor = g_maxtemp
