@@ -205,8 +205,8 @@ def heater_model():
 
             if r_uptime < g_onofftime:
             	r_state = 3
-        	if r_uptime == g_onofftime:
-            	    r_state = 4
+            if r_uptime == g_onofftime:
+            	r_state = 4
 
     	# Heater is off
     	else:
