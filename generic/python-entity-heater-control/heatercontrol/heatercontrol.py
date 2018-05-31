@@ -159,6 +159,7 @@ def heater_model():
     mconst2 = g_minheat - coeff2*g_maxtemp
 
     r_state = 0
+    y = 999
 
     write_log("===== Heater Model =====")
 
