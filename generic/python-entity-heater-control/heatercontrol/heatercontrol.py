@@ -286,7 +286,6 @@ def heater_model():
         if steps < g_minsteps:
             msg = "Lower step limit reached = " + str(steps)
 	    write_log(msg)
-            steps = 0
 
 	# steps - ok, smoke temp - ok, inertia - ok
         if steps > g_minsteps and temperature_smoke > g_minsmoke and r_inertia == 0:
