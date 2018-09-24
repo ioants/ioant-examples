@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-05-31
+# Date: 2018-09-24
 # Description: IOANT heater control algorithm
 # 90 degrees <=> 1152/4 steps = 288
 # =============================================
@@ -286,7 +286,7 @@ def heater_model():
         if steps < g_minsteps:
             msg = "Lower step limit reached = " + str(steps)
 	    write_log(msg)
-            steps = g_defsteps
+            steps = 0
 
 	# steps - ok, smoke temp - ok, inertia - ok
         if steps > g_minsteps and temperature_smoke > g_minsmoke and r_inertia == 0:
