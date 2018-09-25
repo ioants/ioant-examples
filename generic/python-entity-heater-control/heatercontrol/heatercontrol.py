@@ -443,11 +443,11 @@ def setup(configuration):
     global timeout_temperature_water_out
     global timeout_temperature_smoke
 
-    timeout_temperature_indoor = 20
-    timeout_temperature_outdoor = 20
-    timeout_temperature_water_in = 20
-    timeout_temperature_water_out = 20
-    timeout_temperature_smoke = 20
+    timeout_temperature_indoor = 60
+    timeout_temperature_outdoor = 60
+    timeout_temperature_water_in = 60
+    timeout_temperature_water_out = 60
+    timeout_temperature_smoke = 60
 	
     ioant.setup(configuration)
 
@@ -526,23 +526,23 @@ def on_message(topic, message):
         if shash == hash_indoor:
             print "===> indoor " + str(message.value)
             temperature_indoor = message.value
-	    timeout_temperature_indoor = 20
+	    timeout_temperature_indoor = 60
         if shash == hash_outdoor:
             print "===> outdoor " + str(message.value)
             temperature_outdoor = message.value
-	    timeout_temperature_outdoor = 20
+	    timeout_temperature_outdoor = 60
         if shash == hash_water_in:
             print "===> water in " + str(message.value)
             temperature_water_in = message.value
-	    timeout_temperature_water_in = 20
+	    timeout_temperature_water_in = 60
         if shash == hash_water_out:
             print "===> water out " + str(message.value)
             temperature_water_out = message.value
-	    timeout_temperature_water_out = 20
+	    timeout_temperature_water_out = 60
         if shash == hash_smoke:
             print "===> smoke " + str(message.value)
             temperature_smoke = message.value
-	    timeout_temperature_smoke = 20
+	    timeout_temperature_smoke = 60
 
     #if "Temperature" == ioant.get_message_type_name(topic[message_type]):
 
