@@ -354,7 +354,7 @@ def heater_model():
 #========================================================================
     status = str(r_uptime) + " state " + str(r_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
     status = status + "Pos=" + str(g_stepperpos) + "age " + str(timeout_temperature_indoor)
-    print status"
+    print status
     write_log(status)
 
     spacecollapse_op1('kil_kvv32_heatercontrol_status','status', r_state)
