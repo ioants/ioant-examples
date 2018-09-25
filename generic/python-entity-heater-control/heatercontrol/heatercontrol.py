@@ -149,6 +149,12 @@ def heater_model():
     global temperature_water_out
     global temperature_smoke
 
+    global timeout_temperature_indoor
+    global timeout_temperature_outdoor
+    global timeout_temperature_water_in
+    global timeout_temperature_water_out
+    global timeout_temperature_smoke
+
     init_log()
 
     CLOCKWISE = 0
@@ -166,6 +172,12 @@ def heater_model():
     steps = 999
 
     write_log("===== Heater Model =====")
+
+    timeout_temperature_indoor -= 1
+    timeout_temperature_outdoor -= 1
+    timeout_temperature_water_in -= 1
+    timeout_temperature_water_out -= 1
+    timeout_temperature_smoke -= 1
 
     # If necessary data not available: do nothing
     ndi = 0
@@ -193,7 +205,27 @@ def heater_model():
     #====== All necessary data recieved
     if ndi == 0:
 	r_state = 1
-
+	
+    if timeout_temperature_indoor < 1:
+	message = "Old data - temperature_indoor " + str(timeout_temperature_indoor)
+	write_log(message)
+	r_state = 0
+    if timeout_temperature_outdoor < 1:
+	message = "Old data - temperature_outdoor " + str(timeout_temperature_outdoor)
+	write_log(message)
+	r_state = 0
+    if timeout_temperature_water_in < 1:
+	message = "Old data - temperature_water_in " + str(timeout_temperature_water_in)
+	write_log(message)
+	r_state = 0
+    if timeout_temperature_water_out < 1:
+	message = "Old data - temperature_water_out " + str(timeout_temperature_water_out)
+	write_log(message)
+	r_state = 0
+    if timeout_temperature_smoke < 1:
+	message = "Old data - temperature_smoke " + str(timeout_temperature_smoke)
+	write_log(message)
+	r_state = 0
 #========================================================
 # All input data available. Find status of heater
     if r_state == 1:
@@ -397,14 +429,12 @@ def setup(configuration):
     global temperature_water_in
     global temperature_water_out
     global temperature_smoke
-    global temperature_target
 
     temperature_indoor    = 999
     temperature_outdoor   = 999
     temperature_water_in  = 999
     temperature_water_out = 999
     temperature_smoke     = 999
-    temperature_target    = 999
 
     ioant.setup(configuration)
 
@@ -462,22 +492,20 @@ def on_message(topic, message):
     global hash_water_in
     global hash_water_out
     global hash_smoke
-    global hash_target
 
     global temperature_indoor
     global temperature_outdoor
     global temperature_water_in
     global temperature_water_out
     global temperature_smoke
-    global temperature_target
+	
+    global timeout_temperature_indoor
+    global timeout_temperature_outdoor
+    global timeout_temperature_water_in
+    global timeout_temperature_water_out
+    global timeout_temperature_smoke
 
     """ Message function. Handles recieved message from broker """
-
-    if topic["message_type"] == ioant.get_message_type("Trigger"):
-        shash = getTopicHash(topic)
-        if shash == hash_target:
-            print "target"
-            temperature_target = float(message.extra)
 
     if topic["message_type"] == ioant.get_message_type("Temperature"):
         shash = getTopicHash(topic)
@@ -485,18 +513,23 @@ def on_message(topic, message):
         if shash == hash_indoor:
             print "===> indoor " + str(message.value)
             temperature_indoor = message.value
+	    timeout_temperature_indoor = 10
         if shash == hash_outdoor:
             print "===> outdoor " + str(message.value)
             temperature_outdoor = message.value
+	    timeout_temperature_outdoor = 10
         if shash == hash_water_in:
             print "===> water in " + str(message.value)
             temperature_water_in = message.value
+	    timeout_temperature_water_in = 10
         if shash == hash_water_out:
             print "===> water out " + str(message.value)
             temperature_water_out = message.value
+	    timeout_temperature_water_out = 10
         if shash == hash_smoke:
             print "===> smoke " + str(message.value)
             temperature_smoke = message.value
+	    timeout_temperature_smoke = 10
 
     #if "Temperature" == ioant.get_message_type_name(topic[message_type]):
 
@@ -508,7 +541,6 @@ def on_connect():
     global hash_water_in
     global hash_water_out
     global hash_smoke
-    global hash_target
 
     # There is now a connection
     hash_indoor    = subscribe_to_topic("indoor","Temperature")
@@ -516,8 +548,6 @@ def on_connect():
     hash_water_in  = subscribe_to_topic("water_in","Temperature")
     hash_water_out = subscribe_to_topic("water_out","Temperature")
     hash_smoke     = subscribe_to_topic("smoke","Temperature")
-
-    hash_target   = 0 #subscribe_to_topic("target","Trigger")
 
 # =============================================================================
 # Above this line are mandatory functions
