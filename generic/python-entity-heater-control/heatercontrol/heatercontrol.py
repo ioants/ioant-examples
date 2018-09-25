@@ -353,7 +353,7 @@ def heater_model():
 
 #========================================================================
     status = str(r_uptime) + " state " + str(r_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
-    status = status + "Pos=" + str(g_stepperpos) + "age " + str(timeout_temperature_indoor)
+    status = status + "Pos=" + str(g_stepperpos) + " indoor " + str(timeout_temperature_indoor) + " outdoor " + str(timeout_temperature_outdoor)
     print status
     write_log(status)
 
@@ -364,7 +364,8 @@ def heater_model():
     spacecollapse_op1('kil_kvv32_heatercontrol_target','target', y)
     spacecollapse_op1('kil_kvv32_heatercontrol_steps','steps', steps)
     spacecollapse_op1('kil_kvv32_heatercontrol_energy','energy', energy)
-
+    spacecollapse_op1('kil_kvv32_heatercontrol_timeout_indoor','timeout_indoor', timeout_temperature_indoor)
+    spacecollapse_op1('kil_kvv32_heatercontrol_timeout_outdoor','timeout_outdoor', timeout_temperature_outdoor)
     return
 
 
@@ -525,23 +526,23 @@ def on_message(topic, message):
         if shash == hash_indoor:
             print "===> indoor " + str(message.value)
             temperature_indoor = message.value
-	    timeout_temperature_indoor = 10
+	    timeout_temperature_indoor = 20
         if shash == hash_outdoor:
             print "===> outdoor " + str(message.value)
             temperature_outdoor = message.value
-	    timeout_temperature_outdoor = 10
+	    timeout_temperature_outdoor = 20
         if shash == hash_water_in:
             print "===> water in " + str(message.value)
             temperature_water_in = message.value
-	    timeout_temperature_water_in = 10
+	    timeout_temperature_water_in = 20
         if shash == hash_water_out:
             print "===> water out " + str(message.value)
             temperature_water_out = message.value
-	    timeout_temperature_water_out = 10
+	    timeout_temperature_water_out = 20
         if shash == hash_smoke:
             print "===> smoke " + str(message.value)
             temperature_smoke = message.value
-	    timeout_temperature_smoke = 10
+	    timeout_temperature_smoke = 20
 
     #if "Temperature" == ioant.get_message_type_name(topic[message_type]):
 
