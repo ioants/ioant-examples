@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-09-24
+# Date: 2018-09-25
 # Description: IOANT heater control algorithm
 # 90 degrees <=> 1152/4 steps = 288
 # =============================================
@@ -353,8 +353,8 @@ def heater_model():
 
 #========================================================================
     status = str(r_uptime) + " state " + str(r_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
-    status = status + "Pos=" + str(g_stepperpos)
-    print status
+    status = status + "Pos=" + str(g_stepperpos) + "age " + str(timeout_temperature_indoor)
+    print status"
     write_log(status)
 
     spacecollapse_op1('kil_kvv32_heatercontrol_status','status', r_state)
@@ -435,7 +435,19 @@ def setup(configuration):
     temperature_water_in  = 999
     temperature_water_out = 999
     temperature_smoke     = 999
+	
+    global timeout_temperature_indoor
+    global timeout_temperature_outdoor
+    global timeout_temperature_water_in
+    global timeout_temperature_water_out
+    global timeout_temperature_smoke
 
+    timeout_temperature_indoor = 20
+    timeout_temperature_outdoor = 20
+    timeout_temperature_water_in = 20
+    timeout_temperature_water_out = 20
+    timeout_temperature_smoke = 20
+	
     ioant.setup(configuration)
 
     configuration = ioant.get_configuration()
