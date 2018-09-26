@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-09-25
+# Date: 2018-09-26
 # Description: IOANT heater control algorithm
 # 90 degrees <=> 1152/4 steps = 288
 # =============================================
@@ -48,15 +48,6 @@ def spacecollapse_op2 ( label, param ):
 	the_page = response.read()
 
 #=====================================================
-def write_status(status):
-    try:
-        f = open("status.work",'w')
-        f.write(status)
-        f.close()
-    except:
-        print "ERROR write to status file"
-    return
-#=====================================================
 def write_position(pos):
     try:
         f = open("position.work",'w')
@@ -89,6 +80,17 @@ def write_log(message):
         f.close()
     except:
         print "ERROR write to log file"
+    return
+#=====================================================
+def write_ML(pos,temp):
+    try:
+	message = str(pos) + " " + str(temp)
+        f = open("ML.work",'a')
+        f.write(message)
+        f.write('\n')
+        f.close()
+    except:
+        print "ERROR write to ML file"
     return
 
 #=====================================================
@@ -329,6 +331,7 @@ def heater_model():
 		write_log(msg)
                 slimit = g_stepperpos + steps
                 if slimit < 288:
+		    write_ML(g_stepperpos,temperature_water_out)
                     g_stepperpos = slimit
                     ok = 1;
 		    write_log("Stepper moved COUNTERCLOCKWISE")
@@ -339,6 +342,7 @@ def heater_model():
                 msg = "Intention: Decrease heat = " + str(steps)
 		write_log(msg)
                 if g_stepperpos > 0:
+		    write_ML(g_stepperpos,temperature_water_out)
                     g_stepperpos = g_stepperpos - steps
                     ok = 1;
 		    write_log("Stepper moved CLOCKWISE")
