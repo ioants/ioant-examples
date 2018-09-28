@@ -11,6 +11,8 @@ import hashlib
 import math
 import urllib
 import urllib2
+import time
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +77,7 @@ def read_position():
 def write_history(message):
     try:
         f = open("history.work",'a')
+	f.write(datetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S")+" ")
         f.write(message)
         f.write('\n')
         f.close()
