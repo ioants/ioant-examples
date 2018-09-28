@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-09-26
+# Date: 2018-09-28
 # Description: IOANT heater control algorithm
 # 90 degrees <=> 1152/4 steps = 288
 # =============================================
@@ -72,6 +72,16 @@ def read_position():
         pos = 0
     return pos
 #=====================================================
+def write_history(message):
+    try:
+        f = open("history.work",'a')
+        f.write(message)
+        f.write('\n')
+        f.close()
+    except:
+        print "ERROR write to history file"
+    return
+#=====================================================
 def write_log(message):
     try:
         f = open("log.work",'a')
@@ -107,7 +117,9 @@ def init_log():
 #=====================================================
 def publishStepperMsg(steps, direction):
     global g_stepperpos
-    print "ORDER steps to move: "+str(steps) + " dir:" + str(direction)
+    msg = "ORDER steps to move: "+str(steps) + " dir:" + str(direction)
+    write_history(msg)
+    print msg
     #return
     if steps > 500: # same limit as stepper device
         print "Too many steps "+str(steps)
@@ -186,21 +198,25 @@ def heater_model():
     if temperature_outdoor == 999:
 	message = "No data - temperature_outdoor"
 	write_log(message)
+	write_history(message)
 	ndi = ndi + 1
 
     if temperature_water_out == 999:
 	message = "No data - temperature_water_out"
 	write_log(message)
+	write_history(message)
 	ndi = ndi + 1
 
     if temperature_water_in == 999:
 	message = "No data - temperature_water_in"
 	write_log(message)
+	write_history(message)
 	ndi = ndi + 1
 
     if temperature_smoke == 999:
 	message = "No data - temperature_smoke"
 	write_log(message)
+	write_history(message)
 	ndi = ndi + 1
 
 
@@ -211,28 +227,34 @@ def heater_model():
     if timeout_temperature_indoor < 1:
 	message = "Old data - temperature_indoor " + str(timeout_temperature_indoor)
 	write_log(message)
+	write_history(message)
 	r_state = 0
     if timeout_temperature_outdoor < 1:
 	message = "Old data - temperature_outdoor " + str(timeout_temperature_outdoor)
 	write_log(message)
+	write_history(message)
 	r_state = 0
     if timeout_temperature_water_in < 1:
 	message = "Old data - temperature_water_in " + str(timeout_temperature_water_in)
 	write_log(message)
+	write_history(message)
 	r_state = 0
     if timeout_temperature_water_out < 1:
 	message = "Old data - temperature_water_out " + str(timeout_temperature_water_out)
 	write_log(message)
+	write_history(message)
 	r_state = 0
     if timeout_temperature_smoke < 1:
 	message = "Old data - temperature_smoke " + str(timeout_temperature_smoke)
 	write_log(message)
+	write_history(message)
 	r_state = 0
 #========================================================
 # All input data available. Find status of heater
     if r_state == 1:
 #========================================================
 	write_log("Enter state 1")
+	write_history("State 1")
     #====== Heater is on
     	if temperature_smoke > g_minsmoke:
             r_uptime = r_uptime + 1
@@ -253,6 +275,7 @@ def heater_model():
     if r_state == 2:
 #========================================================
 	write_log("Enter state 2")
+	write_history("State 2")
 	r_uptime = r_uptime -1
 	if r_uptime < 1:
 		r_uptime = 0
@@ -266,20 +289,25 @@ def heater_model():
     if r_state == 3:
 #========================================================
 	write_log("Enter state 3")
+	write_history("State 3")
 	write_log("Do nothing")
 #========================================================
 # The heater is on and max heated
     if r_state == 4:
 #========================================================
 	write_log("Enter state 4")
-
+        write_history("State 4")
 	t_temperature_outdoor = temperature_outdoor
 	if temperature_outdoor > g_maxtemp:
         	t_temperature_outdoor = g_maxtemp
-	        write_log("Max limit reached - temperature_outdoor")
+		msg = "Max limit reached - temperature_outdoor " + str(temperature_outdoor)
+	        write_log(msg)
+		write_history(msg)
         if temperature_outdoor < g_mintemp:
                 t_temperature_outdoor = g_mintemp
-	        write_log("Min limit reached - temperature_outdoor")
+		msg = "Min limit reached - temperature_outdoor " + str(temperature_outdoor)
+	        write_log(msg)
+		write_history(msg)
 
         # Expected water out temperature from heater
         if t_temperature_outdoor < g_x_0:
@@ -291,24 +319,31 @@ def heater_model():
         if y < g_minheat:
             msg = "Target temperature to low " + str(y)
 	    write_log(msg)
+	    write_history(msg)
             y = g_minheat
 
         if y > g_maxheat:
             msg = "Target temperature to high " + str(y)
 	    write_log(msg)
+            write_history(msg) 
             y = g_maxheat
 
         # Energy outage
         energy = temperature_water_out - temperature_water_in
         steps = (int)(abs(y - temperature_water_out)*g_relax)
 	if y > temperature_water_out:
-		write_log("Increase heater ")
+		msg = "Increase heater " + str(steps)
+		write_log(msg)
+		write_history(msg) 
 	if y < temperature_water_out:
-		write_log("Decrease heater ")
+		msg = "Decrease heater " + str(steps)
+		write_log(msg)
+		write_history(msg) 
 
         if energy < 0 and y < temperature_water_out:
             steps = 0
             write_log("Negative energy - cooling not possible - RETURN")
+	    write_history("Negative energy - cooling not possible - RETURN")
 
         # Restrict steps to max Steps
         if steps > g_maxsteps:
@@ -329,6 +364,7 @@ def heater_model():
                 direction = COUNTERCLOCKWISE
                 msg = "Intention: Increase heat = " + str(steps)
 		write_log(msg)
+		write_history(msg)
                 slimit = g_stepperpos + steps
                 if slimit < 288:
 		    write_ML(g_stepperpos,temperature_water_out)
@@ -337,6 +373,7 @@ def heater_model():
 		    write_log("Stepper moved COUNTERCLOCKWISE")
 		else:
 		    write_log("Stepper position to high")
+		    write_history("Stepper position to high")
             else:
                 direction = CLOCKWISE
                 msg = "Intention: Decrease heat = " + str(steps)
@@ -348,6 +385,7 @@ def heater_model():
 		    write_log("Stepper moved CLOCKWISE")
 		else:
 		    write_log("Stepper position to low")
+		    write_history("Stepper position to low")
 
             # Execute order to stepper motor
             if ok == 1:
