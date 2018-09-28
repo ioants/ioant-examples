@@ -104,6 +104,16 @@ def write_ML(pos,temp):
     return
 
 #=====================================================
+def init_history():
+    try:
+        f = open("history.work",'w')
+        f.write("===== History =====")
+        f.write('\n')
+        f.close()
+    except:
+        print "ERROR init history file"
+    return
+#=====================================================
 def init_log():
     try:
         f = open("log.work",'w')
@@ -113,7 +123,6 @@ def init_log():
     except:
         print "ERROR init log file"
     return
-
 #=====================================================
 def publishStepperMsg(steps, direction):
     global g_stepperpos
@@ -137,7 +146,16 @@ def publishStepperMsg(steps, direction):
     topic['client_id'] = configuration["publish_topic"]["stepper"]["client_id"]
     topic['stream_index'] = 0
     ioant.publish(out_msg, topic)
-
+#=====================================================
+def init_log():
+    try:
+        f = open("log.work",'w')
+        f.write("===== Log =====")
+        f.write('\n')
+        f.close()
+    except:
+        print "ERROR init log file"
+    return
     write_position(g_stepperpos)
 
 #=====================================================
@@ -172,7 +190,16 @@ def heater_model():
     init_log()
 
     CLOCKWISE = 0
-    COUNTERCLOCKWISE = 1
+    COUNTERCLOCKWISE = 1#=====================================================
+def init_log():
+    try:
+        f = open("log.work",'w')
+        f.write("===== Log =====")
+        f.write('\n')
+        f.close()
+    except:
+        print "ERROR init log file"
+    return
 
     coeff1 = (g_maxheat - g_y_0)/(g_mintemp - g_x_0)
     mconst1 = g_y_0 - coeff1*g_x_0
@@ -533,6 +560,7 @@ def setup(configuration):
     spacecollapse_op1('kil_kvv32_heatercontrol_energy','energy', 0)
 
     init_log()
+    inti_history()
 
 #=====================================================
 def loop():
