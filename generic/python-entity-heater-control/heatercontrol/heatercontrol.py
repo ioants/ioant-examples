@@ -77,7 +77,7 @@ def read_position():
 def write_history(message):
     try:
         f = open("history.work",'a')
-	f.write(datetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S")+" ")
+	f.write(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S")+" ")
         f.write(message)
         f.write('\n')
         f.close()
@@ -219,25 +219,25 @@ def heater_model():
     if temperature_outdoor == 999:
 	message = "No data - temperature_outdoor"
 	write_log(message)
-	write_history(message)
+	#write_history(message)
 	ndi = ndi + 1
 
     if temperature_water_out == 999:
 	message = "No data - temperature_water_out"
 	write_log(message)
-	write_history(message)
+	#write_history(message)
 	ndi = ndi + 1
 
     if temperature_water_in == 999:
 	message = "No data - temperature_water_in"
 	write_log(message)
-	write_history(message)
+	#write_history(message)
 	ndi = ndi + 1
 
     if temperature_smoke == 999:
 	message = "No data - temperature_smoke"
 	write_log(message)
-	write_history(message)
+	#write_history(message)
 	ndi = ndi + 1
 
 
