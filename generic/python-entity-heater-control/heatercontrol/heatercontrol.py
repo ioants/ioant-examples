@@ -190,16 +190,7 @@ def heater_model():
     init_log()
 
     CLOCKWISE = 0
-    COUNTERCLOCKWISE = 1#=====================================================
-def init_log():
-    try:
-        f = open("log.work",'w')
-        f.write("===== Log =====")
-        f.write('\n')
-        f.close()
-    except:
-        print "ERROR init log file"
-    return
+    COUNTERCLOCKWISE = 1
 
     coeff1 = (g_maxheat - g_y_0)/(g_mintemp - g_x_0)
     mconst1 = g_y_0 - coeff1*g_x_0
@@ -281,7 +272,7 @@ def init_log():
     if r_state == 1:
 #========================================================
 	write_log("Enter state 1")
-	write_history("State 1")
+	#write_history("State 1")
     #====== Heater is on
     	if temperature_smoke > g_minsmoke:
             r_uptime = r_uptime + 1
@@ -302,7 +293,7 @@ def init_log():
     if r_state == 2:
 #========================================================
 	write_log("Enter state 2")
-	write_history("State 2")
+	#write_history("State 2")
 	r_uptime = r_uptime -1
 	if r_uptime < 1:
 		r_uptime = 0
@@ -316,14 +307,14 @@ def init_log():
     if r_state == 3:
 #========================================================
 	write_log("Enter state 3")
-	write_history("State 3")
+	#write_history("State 3")
 	write_log("Do nothing")
 #========================================================
 # The heater is on and max heated
     if r_state == 4:
 #========================================================
 	write_log("Enter state 4")
-        write_history("State 4")
+        #write_history("State 4")
 	t_temperature_outdoor = temperature_outdoor
 	if temperature_outdoor > g_maxtemp:
         	t_temperature_outdoor = g_maxtemp
@@ -361,11 +352,11 @@ def init_log():
 	if y > temperature_water_out:
 		msg = "Increase heater " + str(steps)
 		write_log(msg)
-		write_history(msg) 
+		#write_history(msg) 
 	if y < temperature_water_out:
 		msg = "Decrease heater " + str(steps)
 		write_log(msg)
-		write_history(msg) 
+		#write_history(msg) 
 
         if energy < 0 and y < temperature_water_out:
             steps = 0
@@ -418,6 +409,9 @@ def init_log():
             if ok == 1:
                 r_inertia = g_inertia
                 publishStepperMsg(steps, direction)
+		status = str(r_uptime) + " state " + str(r_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
+                status = status + "Pos=" + str(g_stepperpos) + " indoor "
+                write_history(status)
 
 
 #========================================================================
