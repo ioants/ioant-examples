@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-09-28
+# Date: 2018-11-07
 # Description: IOANT heater control algorithm
 # 90 degrees <=> 1152/4 steps = 288
 # =============================================
@@ -147,6 +147,21 @@ def publishStepperMsg(steps, direction):
     topic['global'] = configuration["publish_topic"]["stepper"]["global"]
     topic['local'] = configuration["publish_topic"]["stepper"]["local"]
     topic['client_id'] = configuration["publish_topic"]["stepper"]["client_id"]
+    topic['stream_index'] = 0
+    ioant.publish(out_msg, topic)
+#=====================================================
+def publishEnergyMsg(value):
+    msg = "Energy: "+str(value)
+    print msg
+    
+    configuration = ioant.get_configuration()
+    out_msg = ioant.create_message("Temperature")
+    out_msg.value = value
+    topic = ioant.get_topic_structure()
+    topic['top'] = 'live'
+    topic['global'] = configuration["publish_topic"]["energy"]["global"]
+    topic['local'] = configuration["publish_topic"]["energy"]["local"]
+    topic['client_id'] = configuration["publish_topic"]["energy"]["client_id"]
     topic['stream_index'] = 0
     ioant.publish(out_msg, topic)
 #=====================================================
@@ -418,6 +433,7 @@ def heater_model():
 
 
 #========================================================================
+    publishEnergyMsg(energy)
     status = str(r_uptime) + " state " + str(r_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
     status = status + "Pos=" + str(g_stepperpos) + " indoor " + str(timeout_temperature_indoor) + " outdoor " + str(timeout_temperature_outdoor)
     print status
