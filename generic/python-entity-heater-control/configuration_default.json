@@ -60,6 +60,12 @@
             "local" : "tbd",
             "client_id" : "tbd",
             "stream_index" : 0
+        },
+        "energy" : {
+            "global" : "tbd",
+            "local" : "tbd",
+            "client_id" : "tbd",
+            "stream_index" : 0
         }
     },
     "algorithm" : {
