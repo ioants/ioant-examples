@@ -177,6 +177,20 @@ def init_log():
     return
     write_position(g_stepperpos)
 #=====================================================
+def show_state_mode(st,mo):
+	if st == STATE_INIT:
+		print "STATE_INIT"
+	if st == STATE_OFF:
+		print "STATE_OFF"
+	if st == STATE_WARMING:
+		print "STATE_WARMING"
+	if st == STATE_ON:
+		print "STATE_ON"
+	if mo == MODE_OFFLINE:
+		print "MODE_OFFLINE"
+	if mo == MODE_ONLINE:
+		print "MODE_ONLINE"
+#=====================================================
 def heater_model():
 	global g_minsteps,g_maxsteps,g_defsteps
 	global g_minsmoke
@@ -208,8 +222,8 @@ def heater_model():
 	global MODE_OFFLINE
 	global MODE_ONLINE
 	init_log()
-	CLOCKWISE = 0
-	COUNTERCLOCKWISE = 1
+	CLOCKWISE = 0 # decrease
+	COUNTERCLOCKWISE = 1 # increase
 
 	coeff1 = (g_maxheat - g_y_0)/(g_mintemp - g_x_0)
 	mconst1 = g_y_0 - coeff1*g_x_0
@@ -372,7 +386,7 @@ def heater_model():
 				go = 0
 
 			if go == 1 :
-				publishStepperMsg(steps, direction)
+				publishStepperMsg(int(steps), direction)
 				print "Move Stepper " + str(steps) + " " + str(direction)
 				r_inertia = g_inertia
 				if direction == COUNTERCLOCKWISE:
@@ -380,6 +394,7 @@ def heater_model():
 				if direction == CLOCKWISE:
 					g_current_position -= steps
 #========================================================================
+	show_state_mode(g_state,g_mode)
    	if energy < 999:
 		publishEnergyMsg(energy)
 	status = str(r_uptime) + " state " + str(g_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
