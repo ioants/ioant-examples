@@ -373,7 +373,7 @@ def heater_model():
 				go = 0
 
 			if go == 1 :
-				#publishStepperMsg(steps, direction)
+				publishStepperMsg(steps, direction)
 				print "Move Stepper " + str(steps) + " " + str(direction)
 				r_inertia = g_inertia
 				if direction == COUNTERCLOCKWISE:
