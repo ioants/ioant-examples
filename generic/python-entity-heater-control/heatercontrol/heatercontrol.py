@@ -151,7 +151,7 @@ def publishStepperMsg(steps, direction):
     ioant.publish(out_msg, topic)
 #=====================================================
 def publishEnergyMsg(value):
-    msg = "Energy: "+str(value)
+    msg = "Publish energy message: "+str(value)
     print msg
     
     configuration = ioant.get_configuration()
@@ -433,7 +433,8 @@ def heater_model():
 
 
 #========================================================================
-    publishEnergyMsg(energy)
+    if energy < 999:
+		publishEnergyMsg(energy)
     status = str(r_uptime) + " state " + str(r_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
     status = status + "Pos=" + str(g_stepperpos) + " indoor " + str(timeout_temperature_indoor) + " outdoor " + str(timeout_temperature_outdoor)
     print status
