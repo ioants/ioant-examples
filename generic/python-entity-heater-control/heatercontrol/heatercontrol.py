@@ -248,8 +248,7 @@ def heater_model():
 		#write_history(message)
 		ndi = ndi + 1
 
-		print ndi
-
+	print ndi
 	if ndi == 0:
 		all_data_is_available = 1
 	else:
