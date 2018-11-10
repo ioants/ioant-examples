@@ -362,8 +362,8 @@ def heater_model():
 					steps = 0
 			if steps < 0:
 				direction = CLOCKWISE
-				if g_current_position + steps < 0:
-					steps = 0
+				#if g_current_position + steps < 0:
+				#	steps = 0
 
 			if steps > g_maxsteps:
 				steps = g_maxsteps
