@@ -141,7 +141,7 @@ def publishStepperMsg(steps, direction):
     out_msg = ioant.create_message("RunStepperMotorRaw")
     out_msg.direction = direction
     out_msg.delay_between_steps = 5
-    out_msg.number_of_step = steps
+    out_msg.number_of_step = abs(steps)
     out_msg.step_size = out_msg.StepSize.Value("FULL_STEP")
     topic = ioant.get_topic_structure()
     topic['top'] = 'live'
