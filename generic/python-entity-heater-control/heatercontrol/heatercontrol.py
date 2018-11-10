@@ -262,7 +262,8 @@ def heater_model():
 		#write_history(message)
 		ndi = ndi + 1
 
-	print ndi
+	if ndi > 0:
+		print ndi
 	if ndi == 0:
 		all_data_is_available = 1
 	else:
@@ -395,8 +396,8 @@ def heater_model():
 	show_state_mode(g_state,g_mode)
    	if energy < 999:
 		publishEnergyMsg(energy)
-	status = str(r_uptime) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
-	status = status + "Pos=" + str(g_current_position) + " indoor " + str(timeout_temperature_indoor) + " outdoor " + str(timeout_temperature_outdoor)
+	status = "Uptime=" str(r_uptime) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " inertia " + str(r_inertia) + " steps " + str(steps)
+	status = status + " Pos=" + str(g_current_position) + " indoor " + str(timeout_temperature_indoor) + " outdoor " + str(timeout_temperature_outdoor)
 	print status
 	write_log(status)
 	spacecollapse_op1('kil_kvv32_heatercontrol_status','status', g_state)
