@@ -397,9 +397,8 @@ def heater_model():
 	show_state_mode(g_state,g_mode)
    	if energy < 999:
 		publishEnergyMsg(energy)
-	status = str(r_uptime) + " state " + str(g_state) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
+	status = str(r_uptime) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " Energy " + str(energy) + " countdown " + str(r_inertia) + " steps " + str(steps)
 	status = status + "Pos=" + str(g_current_position) + " indoor " + str(timeout_temperature_indoor) + " outdoor " + str(timeout_temperature_outdoor)
-	status = status + " mode " + str(g_mode)
 	print status
 	write_log(status)
 	spacecollapse_op1('kil_kvv32_heatercontrol_status','status', g_state)
@@ -534,11 +533,7 @@ def setup(configuration):
 #=====================================================
 def loop():
     global r_inertia
-
     ioant.update_loop()
-    if r_inertia > 0:
-        r_inertia -= 1
-
     heater_model()
 
 #=====================================================
