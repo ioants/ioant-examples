@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-11-09
+# Date: 2018-11-10
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -367,9 +367,7 @@ def heater_model():
 
 			if steps > g_maxsteps:
 				steps = g_maxsteps
-			if steps < g_minsteps:
-				steps = 0
-
+				
 			go = 1
 			print "action " + str(action)
 			c = action & 0x0001
@@ -385,7 +383,7 @@ def heater_model():
 			if steps == 0:
 				go = 0
 
-			if go == 1 :
+			if go == 1 and abs(steps) >= g_minsteps:
 				publishStepperMsg(int(steps), direction)
 				print "Move Stepper " + str(steps) + " " + str(direction)
 				r_inertia = g_inertia
