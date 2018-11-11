@@ -193,30 +193,30 @@ def show_state_mode(st,mo):
 #=====================================================
 def show_action_bit_info(a):
 	print "action " + str(a)
-	c = a & 0x01
+	c = a & 1
 	if c == 1:
 		print "- inertia active "
-	c = a & 0x02
+	c = a & 2
 	if c == 1:
 		print "- heater is off "
-	c = a & 0x04
+	c = a & 4
 	if c == 1:
 		print "- no warming above 20 "
-	c = a & 0x08
+	c = a & 8
 	if c == 1:
 		print "- no cooling possible "
-	c = a & 0x10
+	c = a & 16
 	if c == 1:
 		print "- below min steps "
-	c = a & 0x20
+	c = a & 32
 	if c == 1:
 		print "- steps is 0 "
-	c = a & 0x40
+	c = a & 64
 	if c == 1:
-		print "- 0x40 no defined "
-	c = a & 0x80
+		print "- 64 no defined "
+	c = a & 128
 	if c == 1:
-		print "- 0x80 no defined "
+		print "- 128 no defined "
 #=====================================================
 def heater_model():
 	global g_minsteps,g_maxsteps,g_defsteps
