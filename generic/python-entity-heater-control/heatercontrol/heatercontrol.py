@@ -197,25 +197,25 @@ def show_action_bit_info(a):
 	if c == 1:
 		print "- inertia active "
 	c = a & 2
-	if c == 1:
+	if c == 2:
 		print "- heater is off "
 	c = a & 4
-	if c == 1:
+	if c == 4:
 		print "- no warming above 20 "
 	c = a & 8
-	if c == 1:
+	if c == 8:
 		print "- no cooling possible "
 	c = a & 16
-	if c == 1:
+	if c == 16:
 		print "- below min steps "
 	c = a & 32
-	if c == 1:
+	if c == 32:
 		print "- steps is 0 "
 	c = a & 64
-	if c == 1:
+	if c == 64:
 		print "- 64 no defined "
 	c = a & 128
-	if c == 1:
+	if c == 128:
 		print "- 128 no defined "
 #=====================================================
 def heater_model():
