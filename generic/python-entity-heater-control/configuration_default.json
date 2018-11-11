@@ -72,6 +72,12 @@
             "local" : "tbd",
             "client_id" : "tbd",
             "stream_index" : 0
+        },
+        "frequence" : {
+            "global" : "tbd",
+            "local" : "tbd",
+            "client_id" : "tbd",
+            "stream_index" : 0
        }
     },
     "algorithm" : {
