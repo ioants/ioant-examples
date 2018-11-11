@@ -507,8 +507,8 @@ def setup(configuration):
 	v2 = 0.0
 	v3 = 0.0
 	global tmin,tmax
-	tmin = 100
-	tmax = 100
+	tmin = datetime.datetime.now() 
+	tmax = datetime.datetime.now() 
     # Configuration
 	global g_minsteps,g_maxsteps,g_defsteps
 	global g_minsmoke
