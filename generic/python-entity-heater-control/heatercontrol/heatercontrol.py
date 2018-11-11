@@ -166,6 +166,21 @@ def publishEnergyMsg(value):
     topic['stream_index'] = 0
     ioant.publish(out_msg, topic)
 #=====================================================
+def publishExtreme(value):
+    msg = "Publish extreme message: "+str(value)
+    print msg
+    
+    configuration = ioant.get_configuration()
+    out_msg = ioant.create_message("Temperature")
+    out_msg.value = value
+    topic = ioant.get_topic_structure()
+    topic['top'] = 'live'
+    topic['global'] = configuration["publish_topic"]["extreme"]["global"]
+    topic['local'] = configuration["publish_topic"]["extreme"]["local"]
+    topic['client_id'] = configuration["publish_topic"]["extreme"]["client_id"]
+    topic['stream_index'] = 0
+    ioant.publish(out_msg, topic)
+#=====================================================
 def init_log():
     try:
         f = open("log.work",'w')
@@ -449,9 +464,18 @@ def subscribe_to_topic(par,msgt):
     ioant.subscribe(topic)
     shash = getTopicHash(topic)
     return shash
-
+#=====================================================
+def find_extreme(x1,x2,x3):
+	if x1 > x2 and x2 < x3: # minimum
+		publishExtreme(1)
+	if x1 < x2 and x2 > x3: # maximum
+		publishExtreme(2)	
 #=====================================================
 def setup(configuration):
+	global v1,v2,v3
+	v1 = 0.0
+	v2 = 0.0
+	v3 = 0.0
     # Configuration
 	global g_minsteps,g_maxsteps,g_defsteps
 	global g_minsmoke
@@ -566,6 +590,7 @@ def on_message(topic, message):
 	global timeout_temperature_water_in
 	global timeout_temperature_water_out
 	global timeout_temperature_smoke
+	global v1,v2,v3
 	""" Message function. Handles recieved message from broker """
 	if topic["message_type"] == ioant.get_message_type("Temperature"):
 		shash = getTopicHash(topic)
@@ -590,6 +615,10 @@ def on_message(topic, message):
 			print "===> smoke " + str(message.value)
 			temperature_smoke = message.value
 			timeout_temperature_smoke = 60
+			v1 = v2
+			v2 = v3
+			v3 = temperature_smoke
+			find_extreme(v1,v2,v3)
 
     #if "Temperature" == ioant.get_message_type_name(topic[message_type]):
 
