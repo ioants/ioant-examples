@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-11-10
+# Date: 2018-11-11
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -191,6 +191,33 @@ def show_state_mode(st,mo):
 	if mo == MODE_ONLINE:
 		print "MODE_ONLINE"
 #=====================================================
+def show_action_bit_info(an):
+	print "action " + str(action)
+	c = action & 0x01
+	if c == 1:
+		print "- inertia active "
+	c = action & 0x02
+	if c == 1:
+		print "- heater is off "
+	c = action & 0x04
+	if c == 1:
+		print "- no warming above 20 "
+	c = action & 0x08
+	if c == 1:
+		print "- no cooling possible "
+	c = action & 0x10
+	if c == 1:
+		print "- below min steps "
+	c = action & 0x20
+	if c == 1:
+		print "- steps is 0 "
+	c = action & 0x40
+	if c == 1:
+		print "- 0x40 no defined "
+	c = action & 0x80
+	if c == 1:
+		print "- 0x80 no defined "
+#=====================================================
 def heater_model():
 	global g_minsteps,g_maxsteps,g_defsteps
 	global g_minsmoke
@@ -329,16 +356,16 @@ def heater_model():
 				r_uptime = 0
 		if g_state == STATE_ON:
 			action = 0
-			if r_inertia > 0:
+			if r_inertia > 0: # delay after latest order
 				r_inertia -= 1
 				action += 1
-			if temperature_smoke < g_minsmoke:
+			if temperature_smoke < g_minsmoke: # heater is off
 				action += 2
 				g_state = STATE_OFF
 				r_uptime = 0
-			if temperature_indoor > 20:
+			if temperature_indoor > 20: # no warming above 20
 				action += 4
-			if temperature_water_in > temperature_water_out:
+			if temperature_water_in > temperature_water_out: # no cooling
 				action += 8
 
 			temp = temperature_outdoor
@@ -354,39 +381,26 @@ def heater_model():
 				y = coeff2*temp + mconst2
 
 			steps = (int)(y - temperature_water_out)*g_relax
+			if abs(steps) < g_minsteps: # min steps
+				action += 16
 
 			energy = temperature_water_out - temperature_water_in
 
 			if steps > 0:
 				direction = COUNTERCLOCKWISE
-				if g_current_position + steps > 288:
-					steps = 0
 			if steps < 0:
 				direction = CLOCKWISE
-				#if g_current_position + steps < 0:
-				#	steps = 0
+			if steps == 0:
+				action += 32
 
 			if steps > g_maxsteps:
 				steps = g_maxsteps
 				
-			go = 1
-			print "action " + str(action)
-			c = action & 0x0001
-			print "c1 " + str(c)
-			if c == 1:
-				go = 0
-
-			c = action & 0x0004
-			print "c4 " + str(c)
-			if c == 1:
-				go = 0
-
-			if steps == 0:
-				go = 0
-
-			if go == 1 and abs(steps) >= g_minsteps:
+			show_action_bit_info(action)
+			
+			if action == 0:
 				publishStepperMsg(int(steps), direction)
-				print "Move Stepper " + str(steps) + " " + str(direction)
+				print ">>>>>> Move Stepper " + str(steps) + " " + str(direction)
 				r_inertia = g_inertia
 				if direction == COUNTERCLOCKWISE:
 					g_current_position += steps
