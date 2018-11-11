@@ -489,11 +489,15 @@ def find_extreme(x1,x2,x3):
 	if x1 < x2 and x2 < x3:
 		print "values rising"
 	if x1 >= x2 and x2 < x3: # minimum
-		f = 1/(t - tmin)
+		d = t - tmin
+		f = 1/d.seconds
+		tmin = t
 		publishFrequence(f)
 		publishExtreme(1)
 	if x1 <= x2 and x2 > x3: # maximum
-		f = 1/(t - tmax)
+		d = t - tmax
+		f = 1/d.seconds
+		tmax = t
 		publishFrequence(f)
 		publishExtreme(2)	
 #=====================================================
