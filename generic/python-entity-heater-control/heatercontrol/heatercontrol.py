@@ -466,6 +466,7 @@ def subscribe_to_topic(par,msgt):
     return shash
 #=====================================================
 def find_extreme(x1,x2,x3):
+	print "min-max: " + str(x1) + " " + str(x2) + " " + str(x3)
 	if x1 > x2 and x2 < x3: # minimum
 		publishExtreme(1)
 	if x1 < x2 and x2 > x3: # maximum
