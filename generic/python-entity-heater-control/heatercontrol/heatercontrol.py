@@ -181,6 +181,21 @@ def publishExtreme(value):
     topic['stream_index'] = 0
     ioant.publish(out_msg, topic)
 #=====================================================
+def publishFrequence(value):
+    msg = "Publish frequency message: "+str(value)
+    print msg
+    
+    configuration = ioant.get_configuration()
+    out_msg = ioant.create_message("Temperature")
+    out_msg.value = value
+    topic = ioant.get_topic_structure()
+    topic['top'] = 'live'
+    topic['global'] = configuration["publish_topic"]["frequence"]["global"]
+    topic['local'] = configuration["publish_topic"]["frequence"]["local"]
+    topic['client_id'] = configuration["publish_topic"]["frequence"]["client_id"]
+    topic['stream_index'] = 0
+    ioant.publish(out_msg, topic)
+#=====================================================
 def init_log():
     try:
         f = open("log.work",'w')
@@ -466,14 +481,20 @@ def subscribe_to_topic(par,msgt):
     return shash
 #=====================================================
 def find_extreme(x1,x2,x3):
+	global tmax,tmin
+	t = datetime.datetime.now() 
 	print "min-max: " + str(x1) + " " + str(x2) + " " + str(x3)
 	if x1 > x2 and x2 > x3:
 		print "values falling"
 	if x1 < x2 and x2 < x3:
 		print "values rising"
 	if x1 >= x2 and x2 < x3: # minimum
+		f = 1/(t - tmin)
+		publishFrequence(f)
 		publishExtreme(1)
 	if x1 <= x2 and x2 > x3: # maximum
+		f = 1/(t - tmax)
+		publishFrequence(f)
 		publishExtreme(2)	
 #=====================================================
 def setup(configuration):
@@ -481,6 +502,9 @@ def setup(configuration):
 	v1 = 0.0
 	v2 = 0.0
 	v3 = 0.0
+	global tmin,tmax
+	tmin = 100
+	tmax = 100
     # Configuration
 	global g_minsteps,g_maxsteps,g_defsteps
 	global g_minsmoke
