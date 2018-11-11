@@ -191,30 +191,30 @@ def show_state_mode(st,mo):
 	if mo == MODE_ONLINE:
 		print "MODE_ONLINE"
 #=====================================================
-def show_action_bit_info(an):
-	print "action " + str(action)
-	c = action & 0x01
+def show_action_bit_info(a):
+	print "action " + str(a)
+	c = a & 0x01
 	if c == 1:
 		print "- inertia active "
-	c = action & 0x02
+	c = a & 0x02
 	if c == 1:
 		print "- heater is off "
-	c = action & 0x04
+	c = a & 0x04
 	if c == 1:
 		print "- no warming above 20 "
-	c = action & 0x08
+	c = a & 0x08
 	if c == 1:
 		print "- no cooling possible "
-	c = action & 0x10
+	c = a & 0x10
 	if c == 1:
 		print "- below min steps "
-	c = action & 0x20
+	c = a & 0x20
 	if c == 1:
 		print "- steps is 0 "
-	c = action & 0x40
+	c = a & 0x40
 	if c == 1:
 		print "- 0x40 no defined "
-	c = action & 0x80
+	c = a & 0x80
 	if c == 1:
 		print "- 0x80 no defined "
 #=====================================================
