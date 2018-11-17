@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-11-11
+# Date: 2018-11-17
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -196,17 +196,6 @@ def publishFrequence(value):
     topic['stream_index'] = 0
     ioant.publish(out_msg, topic)
 #=====================================================
-def init_log():
-    try:
-        f = open("log.work",'w')
-        f.write("===== Log =====")
-        f.write('\n')
-        f.close()
-    except:
-        print "ERROR init log file"
-    return
-    write_position(g_stepperpos)
-#=====================================================
 def show_state_mode(st,mo):
 	if st == STATE_INIT:
 		print "STATE_INIT"
@@ -366,23 +355,28 @@ def heater_model():
 	if g_mode == MODE_OFFLINE:
 		if all_data_is_available == 1:
 			g_mode = MODE_ONLINE
+			write_log("MODE_OFFLINE -> MODE_ONLINE");
 			r_inertia = g_inertia
 	if g_mode == MODE_ONLINE:
 		old_data = 0
 		if old_data == 1:
 			g_mode = MODE_OFFLINE
+			write_log("MODE_ONLINE -> MODE_OFFLINE");
 		if g_state == STATE_OFF:
 			r_uptime -= 1
 			if r_uptime < 0:
 				r_uptime = 0
 			if temperature_smoke > g_minsmoke:
 				g_state = STATE_WARMING
+				write_log("STATE_OFF -> STATE_WARMING");
 		if g_state == STATE_WARMING:
 			r_uptime += 1
 			if r_uptime == g_uptime:
 				g_state = STATE_ON
+				write_log("STATE_WARMING -> STATE_ON");
 			if temperature_smoke < g_minsmoke:
 				g_state = STATE_OFF
+				write_log("STATE_WARMING -> STATE_OFF");
 				r_uptime = 0
 		if g_state == STATE_ON:
 			action = 0
@@ -392,6 +386,7 @@ def heater_model():
 			if temperature_smoke < g_minsmoke: # heater is off
 				action += 2
 				g_state = STATE_OFF
+				write_log("STATE_ON -> STATE_OFF");
 				r_uptime = 0
 			if temperature_indoor > 20: # no warming above 20
 				action += 4
@@ -585,7 +580,9 @@ def setup(configuration):
 	g_relax = float(configuration["algorithm"]["relax"])
 
 	g_state = STATE_OFF
+	write_log("START -> STATE_OFF");
 	g_mode = MODE_OFFLINE
+	write_log("START -> MODE_OFFLINE");
 	r_inertia = g_inertia
 	r_uptime = g_uptime
 
