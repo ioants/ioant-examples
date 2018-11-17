@@ -89,6 +89,7 @@ def write_history(message):
 def write_log(message):
     	try:
 		f = open("log.work",'a')
+		f.write(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S")+" ")
         	f.write(message)
         	f.write('\n')
         	f.close()
