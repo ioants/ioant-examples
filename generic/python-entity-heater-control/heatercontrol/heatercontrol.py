@@ -269,7 +269,7 @@ def heater_model():
 	global STATE_ON
 	global MODE_OFFLINE
 	global MODE_ONLINE
-	init_log()
+
 	CLOCKWISE = 0 # decrease
 	COUNTERCLOCKWISE = 1 # increase
 
