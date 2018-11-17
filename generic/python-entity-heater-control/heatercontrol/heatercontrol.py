@@ -87,8 +87,6 @@ def write_history(message):
     return
 #=====================================================
 def write_log(message):
-	print "logging "
-    	print message
     	try:
 		f = open("log.work",'a')
         	f.write(message)
@@ -353,7 +351,6 @@ def heater_model():
 		old_data= 1
 
 
-	write_log("===== Heater Model =====")
 	if g_mode == MODE_OFFLINE:
 		if all_data_is_available == 1:
 			g_mode = MODE_ONLINE
@@ -440,7 +437,7 @@ def heater_model():
 	status = "Uptime=" + str(r_uptime) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " inertia " + str(r_inertia) + " steps " + str(steps)
 	status = status + " Pos=" + str(g_current_position) + " indoor " + str(timeout_temperature_indoor) + " outdoor " + str(timeout_temperature_outdoor)
 	print status
-	write_log(status)
+	#write_log(status)
 	spacecollapse_op1('kil_kvv32_heatercontrol_status','status', g_state)
 	spacecollapse_op1('kil_kvv32_heatercontrol_mode','mode', g_mode)
 	spacecollapse_op1('kil_kvv32_heatercontrol_position','position', g_current_position)
