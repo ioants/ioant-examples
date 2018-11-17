@@ -87,14 +87,16 @@ def write_history(message):
     return
 #=====================================================
 def write_log(message):
-    try:
-        f = open("log.work",'a')
-        f.write(message)
-        f.write('\n')
-        f.close()
-    except:
-        print "ERROR write to log file"
-    return
+	print "logging "
+    	print message
+    	try:
+		f = open("log.work",'a')
+        	f.write(message)
+        	f.write('\n')
+        	f.close()
+    	except:
+        	print "ERROR write to log file"
+    	return
 #=====================================================
 def write_ML(pos,temp):
     try:
