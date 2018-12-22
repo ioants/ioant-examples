@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-11-17
+# Date: 2018-12-22
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -262,6 +262,7 @@ def heater_model():
 	global timeout_temperature_water_in
 	global timeout_temperature_water_out
 	global timeout_temperature_smoke
+	global temp_smoke_ave
 	global STATE_INIT
 	global STATE_OFF
 	global STATE_WARMING
@@ -374,7 +375,7 @@ def heater_model():
 			if r_uptime == g_uptime:
 				g_state = STATE_ON
 				write_log("STATE_WARMING -> STATE_ON")
-			if temperature_smoke < g_minsmoke:
+			if temp_smoke_ave < g_minsmoke:
 				g_state = STATE_OFF
 				write_log("STATE_WARMING -> STATE_OFF")
 				r_uptime = 0
@@ -383,7 +384,7 @@ def heater_model():
 			if r_inertia > 0: # delay after latest order
 				r_inertia -= 1
 				action += 1
-			if temperature_smoke < g_minsmoke: # heater is off
+			if temp_smoke_ave < g_minsmoke: # heater is off
 				action += 2
 				g_state = STATE_OFF
 				write_log("STATE_ON -> STATE_OFF")
@@ -620,7 +621,7 @@ def on_message(topic, message):
 	global timeout_temperature_water_in
 	global timeout_temperature_water_out
 	global timeout_temperature_smoke
-	global v1,v2,v3
+	global v1,v2,v3,temp_smoke_ave
 	""" Message function. Handles recieved message from broker """
 	if topic["message_type"] == ioant.get_message_type("Temperature"):
 		shash = getTopicHash(topic)
@@ -648,6 +649,7 @@ def on_message(topic, message):
 			v1 = v2
 			v2 = v3
 			v3 = temperature_smoke
+			temp_smoke_ave = (v1 + v2 + v3)/3
 			find_extreme(v1,v2,v3)
 
     #if "Temperature" == ioant.get_message_type_name(topic[message_type]):
