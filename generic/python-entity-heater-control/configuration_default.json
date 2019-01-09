@@ -78,6 +78,12 @@
             "local" : "tbd",
             "client_id" : "tbd",
             "stream_index" : 0
+       },
+        "wanted" : {
+            "global" : "tbd",
+            "local" : "tbd",
+            "client_id" : "tbd",
+            "stream_index" : 0
        }
     },
     "algorithm" : {
