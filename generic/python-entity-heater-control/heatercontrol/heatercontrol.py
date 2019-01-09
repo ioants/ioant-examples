@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2018-12-22
+# Date: 2019-01-09
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -179,6 +179,21 @@ def publishExtreme(value):
     topic['global'] = configuration["publish_topic"]["extreme"]["global"]
     topic['local'] = configuration["publish_topic"]["extreme"]["local"]
     topic['client_id'] = configuration["publish_topic"]["extreme"]["client_id"]
+    topic['stream_index'] = 0
+    ioant.publish(out_msg, topic)
+#=====================================================
+def publishWanted(value):
+    msg = "Publish wanted temperature message: "+str(value)
+    print msg
+    
+    configuration = ioant.get_configuration()
+    out_msg = ioant.create_message("Temperature")
+    out_msg.value = value
+    topic = ioant.get_topic_structure()
+    topic['top'] = 'live'
+    topic['global'] = configuration["publish_topic"]["wanted"]["global"]
+    topic['local'] = configuration["publish_topic"]["wanted"]["local"]
+    topic['client_id'] = configuration["publish_topic"]["wanted"]["client_id"]
     topic['stream_index'] = 0
     ioant.publish(out_msg, topic)
 #=====================================================
@@ -406,6 +421,7 @@ def heater_model():
 			else:
 				y = coeff2*temp + mconst2
 
+			publishWanted(y)
 			steps = (int)(y - temperature_water_out)*g_relax
 			if abs(steps) < g_minsteps: # min steps
 				action += 16
@@ -440,19 +456,19 @@ def heater_model():
 	status = status + " Pos=" + str(g_current_position) + " indoor " + str(timeout_temperature_indoor) + " outdoor " + str(timeout_temperature_outdoor)
 	print status
 	#write_log(status)
-	spacecollapse_op1('kil_kvv32_heatercontrol_status','status', g_state)
-	spacecollapse_op1('kil_kvv32_heatercontrol_mode','mode', g_mode)
-	spacecollapse_op1('kil_kvv32_heatercontrol_position','position', g_current_position)
-	spacecollapse_op1('kil_kvv32_heatercontrol_inertia','inertia', r_inertia)
-	spacecollapse_op1('kil_kvv32_heatercontrol_uptime','uptime', r_uptime)
-	spacecollapse_op1('kil_kvv32_heatercontrol_target','target', y)
-	spacecollapse_op1('kil_kvv32_heatercontrol_steps','steps', steps)
-	spacecollapse_op1('kil_kvv32_heatercontrol_energy','energy', energy)
-	spacecollapse_op1('kil_kvv32_heatercontrol_timeout_indoor','timeout_indoor', timeout_temperature_indoor)
-	spacecollapse_op1('kil_kvv32_heatercontrol_timeout_outdoor','timeout_outdoor', timeout_temperature_outdoor)
-	spacecollapse_op1('kil_kvv32_heatercontrol_timeout_water_in','timeout_water_in', timeout_temperature_water_in)
-	spacecollapse_op1('kil_kvv32_heatercontrol_timeout_water_out','timeout_water_out', timeout_temperature_water_out)
-	spacecollapse_op1('kil_kvv32_heatercontrol_timeout_smoke','timeout_smoke', timeout_temperature_smoke)
+	#spacecollapse_op1('kil_kvv32_heatercontrol_status','status', g_state)
+	#spacecollapse_op1('kil_kvv32_heatercontrol_mode','mode', g_mode)
+	#spacecollapse_op1('kil_kvv32_heatercontrol_position','position', g_current_position)
+	#spacecollapse_op1('kil_kvv32_heatercontrol_inertia','inertia', r_inertia)
+	#spacecollapse_op1('kil_kvv32_heatercontrol_uptime','uptime', r_uptime)
+	#spacecollapse_op1('kil_kvv32_heatercontrol_target','target', y)
+	#spacecollapse_op1('kil_kvv32_heatercontrol_steps','steps', steps)
+	#spacecollapse_op1('kil_kvv32_heatercontrol_energy','energy', energy)
+	#spacecollapse_op1('kil_kvv32_heatercontrol_timeout_indoor','timeout_indoor', timeout_temperature_indoor)
+	#spacecollapse_op1('kil_kvv32_heatercontrol_timeout_outdoor','timeout_outdoor', timeout_temperature_outdoor)
+	#spacecollapse_op1('kil_kvv32_heatercontrol_timeout_water_in','timeout_water_in', timeout_temperature_water_in)
+	#spacecollapse_op1('kil_kvv32_heatercontrol_timeout_water_out','timeout_water_out', timeout_temperature_water_out)
+	#spacecollapse_op1('kil_kvv32_heatercontrol_timeout_smoke','timeout_smoke', timeout_temperature_smoke)
 	return
 #=====================================================
 def getTopicHash(topic):
