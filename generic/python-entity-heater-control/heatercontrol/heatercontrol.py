@@ -532,9 +532,9 @@ def find_extreme(x1,x2,x3):
 #=====================================================
 def setup(configuration):
 	global v1,v2,v3
-	v1 = 0.0
-	v2 = 0.0
-	v3 = 0.0
+	v1 = 30.0
+	v2 = 30.0
+	v3 = 30.0
 	global tmin,tmax
 	tmin = datetime.datetime.now() 
 	tmax = datetime.datetime.now() 
