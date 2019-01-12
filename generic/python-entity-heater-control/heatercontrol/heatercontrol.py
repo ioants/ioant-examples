@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-01-09
+# Date: 2019-01-12
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -197,6 +197,21 @@ def publishWanted(value):
     topic['stream_index'] = 0
     ioant.publish(out_msg, topic)
 #=====================================================
+def publishInertia(value):
+    msg = "Publish inertia: "+str(value)
+    print msg
+    
+    configuration = ioant.get_configuration()
+    out_msg = ioant.create_message("Temperature")
+    out_msg.value = value
+    topic = ioant.get_topic_structure()
+    topic['top'] = 'live'
+    topic['global'] = configuration["publish_topic"]["x_inertia"]["global"]
+    topic['local'] = configuration["publish_topic"]["x_inertia"]["local"]
+    topic['client_id'] = configuration["publish_topic"]["x_inertia"]["client_id"]
+    topic['stream_index'] = 0
+    ioant.publish(out_msg, topic)
+#=====================================================
 def publishFrequence(value):
     msg = "Publish frequency message: "+str(value)
     print msg
@@ -284,6 +299,8 @@ def heater_model():
 	global STATE_ON
 	global MODE_OFFLINE
 	global MODE_ONLINE
+	
+	publishInertia(r_inertia)
 
 	CLOCKWISE = 0 # decrease
 	COUNTERCLOCKWISE = 1 # increase
