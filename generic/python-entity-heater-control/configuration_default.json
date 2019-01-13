@@ -91,6 +91,12 @@
             "client_id" : "tbd",
             "stream_index" : 0
        },
+        "onofftime" : {
+            "global" : "tbd",
+            "local" : "tbd",
+            "client_id" : "tbd",
+            "stream_index" : 0
+       },
         "state" : {
             "global" : "tbd",
             "local" : "tbd",
@@ -106,17 +112,17 @@
     },
     "algorithm" : {
         "mintemp" : -7,
-        "maxtemp" : 10,
-        "minheat" : 20,
+        "maxtemp" : 15,
+        "minheat" : 25,
         "maxheat" : 40,
         "minsteps" : 5,
-        "maxsteps" : 30,
-        "defsteps" : 10,
-        "onofftime" : 3600,
-        "relax" : 3,
-        "minsmoke" : 27.0,
-        "inertia" : 120,
+        "maxsteps" : 40,
+        "defsteps" : 30,
+        "onofftime" : 720,
+        "relax" : 4,
+        "minsmoke" : 28.0,
+        "inertia" : 60,
         "x_0" : 0,
-        "y_0" : 35
+        "y_0" : 36
     }
 }
