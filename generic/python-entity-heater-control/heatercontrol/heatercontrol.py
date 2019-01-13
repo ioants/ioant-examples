@@ -257,6 +257,21 @@ def publishMode(value):
     topic['stream_index'] = 0
     ioant.publish(out_msg, topic)
 #=====================================================
+def publishOnOff(value):
+    msg = "Publish OnOff message: "+str(value)
+    print msg
+    
+    configuration = ioant.get_configuration()
+    out_msg = ioant.create_message("Temperature")
+    out_msg.value = value
+    topic = ioant.get_topic_structure()
+    topic['top'] = 'live'
+    topic['global'] = configuration["publish_topic"]["onofftime"]["global"]
+    topic['local'] = configuration["publish_topic"]["onofftime"]["local"]
+    topic['client_id'] = configuration["publish_topic"]["onofftime"]["client_id"]
+    topic['stream_index'] = 0
+    ioant.publish(out_msg, topic)
+#=====================================================
 def show_state_mode(st,mo):
 	if st == STATE_INIT:
 		print "STATE_INIT"
@@ -333,6 +348,8 @@ def heater_model():
 	publishInertia(r_inertia)
 	publishState(g_state)
 	publishMode(g_mode)
+	if r_uptime < g_uptime:
+		publishOnOff(r_uptime)
 
 	CLOCKWISE = 0 # decrease
 	COUNTERCLOCKWISE = 1 # increase
