@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-01-12
+# Date: 2019-01-13
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -227,6 +227,36 @@ def publishFrequence(value):
     topic['stream_index'] = 0
     ioant.publish(out_msg, topic)
 #=====================================================
+def publishState(value):
+    msg = "Publish state message: "+str(value)
+    print msg
+    
+    configuration = ioant.get_configuration()
+    out_msg = ioant.create_message("Temperature")
+    out_msg.value = value
+    topic = ioant.get_topic_structure()
+    topic['top'] = 'live'
+    topic['global'] = configuration["publish_topic"]["state"]["global"]
+    topic['local'] = configuration["publish_topic"]["state"]["local"]
+    topic['client_id'] = configuration["publish_topic"]["state"]["client_id"]
+    topic['stream_index'] = 0
+    ioant.publish(out_msg, topic)
+#=====================================================
+def publishMode(value):
+    msg = "Publish mode message: "+str(value)
+    print msg
+    
+    configuration = ioant.get_configuration()
+    out_msg = ioant.create_message("Temperature")
+    out_msg.value = value
+    topic = ioant.get_topic_structure()
+    topic['top'] = 'live'
+    topic['global'] = configuration["publish_topic"]["mode"]["global"]
+    topic['local'] = configuration["publish_topic"]["mode"]["local"]
+    topic['client_id'] = configuration["publish_topic"]["mode"]["client_id"]
+    topic['stream_index'] = 0
+    ioant.publish(out_msg, topic)
+#=====================================================
 def show_state_mode(st,mo):
 	if st == STATE_INIT:
 		print "STATE_INIT"
@@ -301,6 +331,8 @@ def heater_model():
 	global MODE_ONLINE
 	
 	publishInertia(r_inertia)
+	publishState(g_state)
+	publishMode(g_mode)
 
 	CLOCKWISE = 0 # decrease
 	COUNTERCLOCKWISE = 1 # increase
