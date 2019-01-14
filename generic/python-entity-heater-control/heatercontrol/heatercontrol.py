@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-01-13
+# Date: 2019-01-14
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -16,7 +16,33 @@ import time
 import datetime
 
 logger = logging.getLogger(__name__)
-
+temperature_indoor    = 999
+temperature_outdoor   = 999
+temperature_water_in  = 999
+temperature_water_out = 999
+temperature_smoke     = 999
+STATE_INIT = 0
+STATE_OFF = 1
+STATE_WARMING = 2
+STATE_ON = 3
+MODE_OFFLINE = 1
+MODE_ONLINE = 2
+g_minsteps = 5
+g_maxsteps = 30
+g_defsteps = 10
+g_minsmoke = 27
+g_mintemp = -7
+g_maxtemp = 10
+g_minheat = 20
+g_maxheat = 40
+g_x_0 = 0
+g_y_0 = 35
+g_relax = 3.0
+timeout_temperature_indoor = 60
+timeout_temperature_outdoor = 60
+timeout_temperature_water_in = 60
+timeout_temperature_water_out = 60
+timeout_temperature_smoke = 60
 #===================================================
 def spacecollapse_op1 ( label, typ, value ):
 #===================================================
@@ -272,6 +298,22 @@ def publishOnOff(value):
     topic['stream_index'] = 0
     ioant.publish(out_msg, topic)
 #=====================================================
+def publishStep(value):
+    msg = "Publish Steps message: "+str(value)
+    print msg
+    
+    configuration = ioant.get_configuration()
+    out_msg = ioant.create_message("Temperature")
+    out_msg.value = value
+    topic = ioant.get_topic_structure()
+    topic['top'] = 'live'
+    topic['global'] = configuration["publish_topic"]["steps"]["global"]
+    topic['local'] = configuration["publish_topic"]["steps"]["local"]
+    topic['client_id'] = configuration["publish_topic"]["steps"]["client_id"]
+    topic['stream_index'] = 0
+    ioant.publish(out_msg, topic)
+#==========================================
+#=====================================================
 def show_state_mode(st,mo):
 	if st == STATE_INIT:
 		print "STATE_INIT"
@@ -489,6 +531,7 @@ def heater_model():
 
 			publishWanted(y)
 			steps = (int)(y - temperature_water_out)*g_relax
+			publishStep(steps)
 			if abs(steps) < g_minsteps: # min steps
 				action += 16
 
@@ -521,20 +564,6 @@ def heater_model():
 	status = "Uptime=" + str(r_uptime) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " inertia " + str(r_inertia) + " steps " + str(steps)
 	status = status + " Pos=" + str(g_current_position) + " indoor " + str(timeout_temperature_indoor) + " outdoor " + str(timeout_temperature_outdoor)
 	print status
-	#write_log(status)
-	#spacecollapse_op1('kil_kvv32_heatercontrol_status','status', g_state)
-	#spacecollapse_op1('kil_kvv32_heatercontrol_mode','mode', g_mode)
-	#spacecollapse_op1('kil_kvv32_heatercontrol_position','position', g_current_position)
-	#spacecollapse_op1('kil_kvv32_heatercontrol_inertia','inertia', r_inertia)
-	#spacecollapse_op1('kil_kvv32_heatercontrol_uptime','uptime', r_uptime)
-	#spacecollapse_op1('kil_kvv32_heatercontrol_target','target', y)
-	#spacecollapse_op1('kil_kvv32_heatercontrol_steps','steps', steps)
-	#spacecollapse_op1('kil_kvv32_heatercontrol_energy','energy', energy)
-	#spacecollapse_op1('kil_kvv32_heatercontrol_timeout_indoor','timeout_indoor', timeout_temperature_indoor)
-	#spacecollapse_op1('kil_kvv32_heatercontrol_timeout_outdoor','timeout_outdoor', timeout_temperature_outdoor)
-	#spacecollapse_op1('kil_kvv32_heatercontrol_timeout_water_in','timeout_water_in', timeout_temperature_water_in)
-	#spacecollapse_op1('kil_kvv32_heatercontrol_timeout_water_out','timeout_water_out', timeout_temperature_water_out)
-	#spacecollapse_op1('kil_kvv32_heatercontrol_timeout_smoke','timeout_smoke', timeout_temperature_smoke)
 	return
 #=====================================================
 def getTopicHash(topic):
@@ -668,14 +697,6 @@ def setup(configuration):
 	write_log("START -> MODE_OFFLINE")
 	r_inertia = g_inertia
 	r_uptime = g_uptime
-
-	spacecollapse_op1('kil_kvv32_heatercontrol_status','status', g_state)
-	spacecollapse_op1('kil_kvv32_heatercontrol_position','position', g_current_position)
-	spacecollapse_op1('kil_kvv32_heatercontrol_inertia','inertia', r_inertia)
-	spacecollapse_op1('kil_kvv32_heatercontrol_uptime','uptime', r_uptime)
-	spacecollapse_op1('kil_kvv32_heatercontrol_target','target', 0)
-	spacecollapse_op1('kil_kvv32_heatercontrol_steps','steps', 0)
-	spacecollapse_op1('kil_kvv32_heatercontrol_energy','energy', 0)
 
 	init_log()
 	init_history()
