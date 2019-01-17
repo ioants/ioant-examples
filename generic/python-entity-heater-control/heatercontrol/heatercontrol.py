@@ -72,8 +72,8 @@ def publishGowData( ipayload, n ):
 	try: 
 		response = urllib2.urlopen(req)
 		the_page = response.read()
-		print 'Message to ' + itopic + ': ' + the_page
-		evaluateAction(the_page)
+		print 'Message to ' + g_gow_topic + ': ' + the_page
+		#evaluateAction(the_page)
 	except urllib2.URLError as e:
 		print e.reason
 #=====================================================
