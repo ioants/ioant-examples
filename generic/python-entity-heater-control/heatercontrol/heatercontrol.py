@@ -43,19 +43,20 @@ timeout_temperature_outdoor = 60
 timeout_temperature_water_in = 60
 timeout_temperature_water_out = 60
 timeout_temperature_smoke = 60
-
+g_counter = 0
 #===================================================
-def publishGowData( itopic, ipayload, n, iperiod ):
+def publishGowData( ipayload, n ):
 #===================================================
         global g_gow_server
 	global g_period
+	global g_gow_topic
 	
 	url = g_gow_server
 	server = 'gowServer.php'
 	data = {}
 	# meta data
 	data['do']     = 'data'
-	data['topic']  = itopic
+	data['topic']  = g_gow_topic
 	data['no']     = n
 	data['wrap']   = 999999
 	data['ts']     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -384,6 +385,7 @@ def heater_model():
 	global timeout_temperature_smoke
 	global temp_smoke_ave
 	global g_period
+	global g_counter
 	global STATE_INIT
 	global STATE_OFF
 	global STATE_WARMING
@@ -573,6 +575,9 @@ def heater_model():
 	status = "Uptime=" + str(r_uptime) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " inertia " + str(r_inertia) + " steps " + str(steps)
 	status = status + " Pos=" + str(g_current_position) + " indoor " + str(timeout_temperature_indoor) + " outdoor " + str(timeout_temperature_outdoor)
 	print status
+	payload = '{"flags" : "' + str(action) + '}'
+	publishGowData( payload, g_counter )
+	
 	return
 #=====================================================
 def getTopicHash(topic):
@@ -645,7 +650,9 @@ def setup(configuration):
 	global STATE_ON
 	global MODE_OFFLINE
 	global MODE_ONLINE
+	global g_counter
 
+	g_counter = 0
 	STATE_INIT = 0
 	STATE_OFF = 1
 	STATE_WARMING = 2
@@ -722,7 +729,11 @@ def setup(configuration):
 #=====================================================
 def loop():
     global r_inertia
+    global g_counter
     ioant.update_loop()
+    g_counter += 1
+    if g_counter > 999999:
+	g_counter = 0
     heater_model()
 
 #=====================================================
