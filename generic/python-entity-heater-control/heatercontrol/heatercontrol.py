@@ -351,7 +351,7 @@ def show_action_bit_info(a):
 		message +=  "- steps is 0 "
 	c = a & 64
 	if c == 64:
-		message +=  "- 64 no defined "
+		message +=  "- energy limit reached "
 	c = a & 128
 	if c == 128:
 		message +=  "- 128 no defined "
@@ -366,6 +366,7 @@ def heater_model():
 	global g_x_0,g_y_0
 	global g_relax
 	global r_inertia
+	global g_max_energy
 	global g_current_position
 	global r_uptime
 	global g_state
@@ -542,6 +543,8 @@ def heater_model():
 				action += 16
 
 			energy = temperature_water_out - temperature_water_in
+			if energy > g_max_energy and steps > 0:
+				action += 64
 
 			if steps > 0:
 				direction = COUNTERCLOCKWISE
@@ -624,7 +627,7 @@ def setup(configuration):
 	tmax = datetime.datetime.now() 
     # Configuration
 	global g_minsteps,g_maxsteps,g_defsteps
-	global g_minsmoke
+	global g_minsmoke,g_max_energy
 	global g_mintemp,g_maxtemp
 	global g_minheat,g_maxheat
 	global g_x_0,g_y_0
@@ -660,6 +663,7 @@ def setup(configuration):
 	g_x_0 = 0
 	g_y_0 = 35
 	g_relax = 3.0
+	g_max_energy = 4.0
 	g_current_position = read_position()
 	global temperature_indoor
 	global temperature_outdoor
@@ -696,6 +700,7 @@ def setup(configuration):
 	g_uptime = int(configuration["algorithm"]["onofftime"])
 	g_inertia = int(configuration["algorithm"]["inertia"])
 	g_relax = float(configuration["algorithm"]["relax"])
+	g_max_energy = float(configuration["algorithm"]["maxenergy"])
 
 	g_state = STATE_OFF
 	write_log("START -> STATE_OFF")
