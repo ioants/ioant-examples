@@ -556,7 +556,7 @@ def heater_model():
 			if steps > g_maxsteps:
 				steps = g_maxsteps
 				
-			show_action_bit_info(action)
+			#show_action_bit_info(action)
 			
 			if action == 0:
 				publishStepperMsg(int(steps), direction)
