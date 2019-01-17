@@ -47,8 +47,11 @@ timeout_temperature_smoke = 60
 #===================================================
 def publishGowData( itopic, ipayload, n, iperiod ):
 #===================================================
-	url = conf_gs_url
-	server = conf_server_name
+        global g_gow_server
+	global g_period
+	
+	url = g_gow_server
+	server = 'gowServer.php'
 	data = {}
 	# meta data
 	data['do']     = 'data'
@@ -56,7 +59,7 @@ def publishGowData( itopic, ipayload, n, iperiod ):
 	data['no']     = n
 	data['wrap']   = 999999
 	data['ts']     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	data['period'] = 
+	data['period'] = g_period
 	data['hw']     = 'python'
 	data['hash']   = 'nohash'
 	# payload
