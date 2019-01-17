@@ -43,39 +43,35 @@ timeout_temperature_outdoor = 60
 timeout_temperature_water_in = 60
 timeout_temperature_water_out = 60
 timeout_temperature_smoke = 60
-#===================================================
-def spacecollapse_op1 ( label, typ, value ):
-#===================================================
-	url = 'http://spacecollapse.simuino.com/scServer.php'
-	data = {}
-	data['op'] = 1
-	data['label'] = label
-	data['type'] = typ
-	data['value'] = value
 
+#===================================================
+def publishGowData( itopic, ipayload, n, iperiod ):
+#===================================================
+	url = conf_gs_url
+	server = conf_server_name
+	data = {}
+	# meta data
+	data['do']     = 'data'
+	data['topic']  = itopic
+	data['no']     = n
+	data['wrap']   = 999999
+	data['ts']     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+	data['period'] = 
+	data['hw']     = 'python'
+	data['hash']   = 'nohash'
+	# payload
+	data['payload'] = ipayload
+	
 	values = urllib.urlencode(data)
-	req = url + '?' + values
-	try: response = urllib2.urlopen(req)
+	req = 'http://' + url + '/' + server + '?' + values
+	print req
+	try: 
+		response = urllib2.urlopen(req)
+		the_page = response.read()
+		print 'Message to ' + itopic + ': ' + the_page
+		evaluateAction(the_page)
 	except urllib2.URLError as e:
 		print e.reason
-	the_page = response.read()
-
-#===================================================
-def spacecollapse_op2 ( label, param ):
-#===================================================
-	url = 'http://spacecollapse.simuino.com/scServer.php'
-	data = {}
-	data['op'] = 2
-	data['label'] = label
-	data['param'] = param
-
-	values = urllib.urlencode(data)
-	req = url + '?' + values
-	try: response = urllib2.urlopen(req)
-	except urllib2.URLError as e:
-		print e.reason
-	the_page = response.read()
-
 #=====================================================
 def write_position(pos):
     try:
@@ -384,6 +380,7 @@ def heater_model():
 	global timeout_temperature_water_out
 	global timeout_temperature_smoke
 	global temp_smoke_ave
+	global g_period
 	global STATE_INIT
 	global STATE_OFF
 	global STATE_WARMING
@@ -664,6 +661,9 @@ def setup(configuration):
 	g_y_0 = 35
 	g_relax = 3.0
 	g_max_energy = 4.0
+	g_period = 5000
+	g_gow_server = 'gow.test.com'
+	g_gow_topic = 'etc/etc/etc/0'
 	g_current_position = read_position()
 	global temperature_indoor
 	global temperature_outdoor
@@ -687,6 +687,10 @@ def setup(configuration):
 	timeout_temperature_smoke = 60
 	ioant.setup(configuration)
 	configuration = ioant.get_configuration()
+	g_period   = int(configuration["ioant"]["communication_delay"])
+	g_period   = round(g_period/1000)
+	g_gow_server = int(configuration["gow_server"])
+	g_gow_topic = int(configuration["gow_topic"])
 	g_minsteps = int(configuration["algorithm"]["minsteps"])
 	g_maxsteps = int(configuration["algorithm"]["maxsteps"])
 	g_defsteps = int(configuration["algorithm"]["defsteps"])
