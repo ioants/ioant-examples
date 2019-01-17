@@ -577,13 +577,13 @@ def heater_model():
 	status = status + " Pos=" + str(g_current_position) + " indoor " + str(timeout_temperature_indoor) + " outdoor " + str(timeout_temperature_outdoor)
 	#print status
 	payload  = '{\n'
-	payload += '"flags" : "' + str(action) + '"\n'
-	payload += '"steps" : "' + str(steps) + '"\n'
-	payload += '"target" : "' + str(y) + '"\n'
-	payload += '"mode" : "' + str(g_mode) + '"\n'
-	payload += '"state" : "' + str(g_state) + '"\n'
-	payload += '"inertia" : "' + str(r_inertia) + '"\n'
-	payload += '"onofftime" : "' + str(r_uptime) + '"\n'
+	payload += '"flags" : "' + str(action) + '",\n'
+	payload += '"steps" : "' + str(steps) + '",\n'
+	payload += '"target" : "' + str(y) + '",\n'
+	payload += '"mode" : "' + str(g_mode) + '",\n'
+	payload += '"state" : "' + str(g_state) + '",\n'
+	payload += '"inertia" : "' + str(r_inertia) + '",\n'
+	payload += '"onofftime" : "' + str(r_uptime) + '",\n'
 	payload += '"temperature_water_out" : "' + str(temperature_water_out) + '"\n'
 	payload += '}\n'
 	publishGowData( payload, g_counter )
