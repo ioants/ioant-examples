@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-01-14
+# Date: 2019-01-17
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -329,31 +329,34 @@ def show_state_mode(st,mo):
 		print "MODE_ONLINE"
 #=====================================================
 def show_action_bit_info(a):
-	print "action " + str(a)
+	
+	message = "action " + str(a)
 	c = a & 1
 	if c == 1:
-		print "- inertia active "
+		message += "- inertia active "
 	c = a & 2
 	if c == 2:
-		print "- heater is off "
+		message +=  "- heater is off "
 	c = a & 4
 	if c == 4:
-		print "- no warming above 20 "
+		message +=  "- no warming above 20 "
 	c = a & 8
 	if c == 8:
-		print "- no cooling possible "
+		message +=  "- no cooling possible "
 	c = a & 16
 	if c == 16:
-		print "- below min steps "
+		message +=  "- below min steps "
 	c = a & 32
 	if c == 32:
-		print "- steps is 0 "
+		message +=  "- steps is 0 "
 	c = a & 64
 	if c == 64:
-		print "- 64 no defined "
+		message +=  "- 64 no defined "
 	c = a & 128
 	if c == 128:
-		print "- 128 no defined "
+		message +=  "- 128 no defined "
+	print message
+	write_history(message)
 #=====================================================
 def heater_model():
 	global g_minsteps,g_maxsteps,g_defsteps
@@ -530,7 +533,10 @@ def heater_model():
 				y = coeff2*temp + mconst2
 
 			publishWanted(y)
-			steps = (int)(y - temperature_water_out)*g_relax
+			steps = round((y - temperature_water_out)*g_relax)
+			print "g_relax = " + g_relax
+			print "steps = " + steps
+			print "temperature_water_out = " + temperature_water_out
 			publishStep(steps)
 			if abs(steps) < g_minsteps: # min steps
 				action += 16
