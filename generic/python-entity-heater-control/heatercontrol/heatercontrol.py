@@ -652,6 +652,9 @@ def setup(configuration):
 	global MODE_OFFLINE
 	global MODE_ONLINE
 	global g_counter
+	global g_gow_server
+	global g_period
+	global g_gow_topic
 
 	g_counter = 0
 	STATE_INIT = 0
