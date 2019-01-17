@@ -584,7 +584,9 @@ def heater_model():
 	payload += '"state" : "' + str(g_state) + '",\n'
 	payload += '"inertia" : "' + str(r_inertia) + '",\n'
 	payload += '"onofftime" : "' + str(r_uptime) + '",\n'
-	payload += '"temperature_water_out" : "' + str(temperature_water_out) + '"\n'
+	payload += '"temperature_water_out" : "' + str(temperature_water_out) + '",\n'
+	payload += '"temperature_water_in" : "' + str(temperature_water_in) + '",\n'
+	payload += '"temperature_smoke" : "' + str(temperature_smoke) + '"\n'
 	payload += '}\n'
 	publishGowData( payload, g_counter )
 	
