@@ -534,9 +534,9 @@ def heater_model():
 
 			publishWanted(y)
 			steps = round((y - temperature_water_out)*g_relax)
-			print "g_relax = " + g_relax
-			print "steps = " + steps
-			print "temperature_water_out = " + temperature_water_out
+			print "g_relax = " + str(g_relax)
+			print "steps = " + str(steps)
+			print "temperature_water_out = " + str(temperature_water_out)
 			publishStep(steps)
 			if abs(steps) < g_minsteps: # min steps
 				action += 16
