@@ -576,7 +576,7 @@ def heater_model():
 	status = "Uptime=" + str(r_uptime) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " inertia " + str(r_inertia) + " steps " + str(steps)
 	status = status + " Pos=" + str(g_current_position) + " indoor " + str(timeout_temperature_indoor) + " outdoor " + str(timeout_temperature_outdoor)
 	print status
-	payload = '{"flags" : "' + str(action) + '}'
+	payload = '{"flags" : "' + str(action) + '"}'
 	publishGowData( payload, g_counter )
 	
 	return
