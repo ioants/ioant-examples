@@ -16,6 +16,8 @@
         "app_generic_b" : 0,
         "app_generic_c" : 0
     },
+    "gow_server" : "gow.some.com",
+    "gow_topic"  : "kvv32/gow/something/0",
     "subscribe_topic" : {
         "free_for_use" : {
             "global" : "tbd",
