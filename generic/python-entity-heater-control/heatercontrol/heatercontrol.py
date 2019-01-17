@@ -412,6 +412,7 @@ def heater_model():
 	steps = 999
 	all_data_is_new = 0
 	old_data = 0
+	action = 0
 
 	# If necessary data not available: do nothing
 	ndi = 0
