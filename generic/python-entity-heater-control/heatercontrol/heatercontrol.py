@@ -537,7 +537,11 @@ def heater_model():
 				y = coeff2*temp + mconst2
 
 			publishWanted(y)
-			steps = round((y - temperature_water_out)*g_relax)
+			tmp1 = y*g_relax
+			tmp2 = temperature_water_out*g_relax
+			tmp3 = tmp1 - tmp2
+			steps = round(tmp3)
+			print "tmp1=" + str(tmp1) + " tmp2="+str(tmp2) + " tmp3=" + str(tmp3)
 			print "g_relax = " + str(g_relax)
 			print "steps = " + str(steps)
 			print "temperature_water_out = " + str(temperature_water_out)
