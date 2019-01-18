@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-01-17
+# Date: 2019-01-18
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -573,9 +573,7 @@ def heater_model():
 	show_state_mode(g_state,g_mode)
    	if energy < 999:
 		publishEnergyMsg(energy)
-	status = "Uptime=" + str(r_uptime) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " inertia " + str(r_inertia) + " steps " + str(steps)
-	status = status + " Pos=" + str(g_current_position) + " indoor " + str(timeout_temperature_indoor) + " outdoor " + str(timeout_temperature_outdoor)
-	#print status
+
 	payload  = '{\n'
 	payload += '"flags" : "' + str(action) + '",\n'
 	payload += '"steps" : "' + str(steps) + '",\n'
