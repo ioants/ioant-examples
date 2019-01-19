@@ -352,18 +352,18 @@ def publishStep(value):
     topic['stream_index'] = 0
     ioant.publish(out_msg, topic)
 #=====================================================
-def show_state_mode(p1,st,mo):
-	if st == p1.STATE_INIT:
+def show_state_mode(p1):
+	if p1.r_state == p1.STATE_INIT:
 		print "STATE_INIT"
-	if st == p1.STATE_OFF:
+	if p1.r_state == p1.STATE_OFF:
 		print "STATE_OFF"
-	if st == p1.STATE_WARMING:
+	if p1.r_state == p1.STATE_WARMING:
 		print "STATE_WARMING"
-	if st == p1.STATE_ON:
+	if p1.r_state == p1.STATE_ON:
 		print "STATE_ON"
-	if mo == p1.MODE_OFFLINE:
+	if p1.r_mode == p1.MODE_OFFLINE:
 		print "MODE_OFFLINE"
-	if mo == p1.MODE_ONLINE:
+	if p1.r_mode == p1.MODE_ONLINE:
 		print "MODE_ONLINE"
 #=====================================================
 def show_action_bit_info(a):
