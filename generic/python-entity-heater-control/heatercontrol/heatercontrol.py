@@ -398,8 +398,8 @@ def show_action_bit_info(a):
 #=====================================================
 def heater_model(p1):	
 	publishInertia(p1.r_inertia)
-	publishState(p1.g_state)
-	publishMode(p1.g_mode)
+	publishState(p1.r_state)
+	publishMode(p1.r_mode)
 	if p1.r_onoff < p1.g_onoff:
 		publishOnOff(p1.r_onoff)
 
@@ -520,7 +520,7 @@ def heater_model(p1):
 				action += 1
 			if p1.temp_smoke_ave < p1.g_minsmoke: # heater is off
 				action += 2
-				p1.g_state = p1.STATE_OFF
+				p1.r_state = p1.STATE_OFF
 				write_log("STATE_ON -> STATE_OFF")
 				p1.r_uptime = 0
 			if p1.temperature_indoor > 20: # no warming above 20
@@ -582,8 +582,8 @@ def heater_model(p1):
 	payload += '"flags" : "' + str(action) + '",\n'
 	payload += '"steps" : "' + str(steps) + '",\n'
 	payload += '"target" : "' + str(y) + '",\n'
-	payload += '"mode" : "' + str(g_mode) + '",\n'
-	payload += '"state" : "' + str(g_state) + '",\n'
+	payload += '"mode" : "' + str(r_mode) + '",\n'
+	payload += '"state" : "' + str(r_state) + '",\n'
 	payload += '"inertia" : "' + str(r_inertia) + '",\n'
 	payload += '"onofftime" : "' + str(r_uptime) + '",\n'
 	payload += '"temperature_water_out" : "' + str(temperature_water_out) + '",\n'
