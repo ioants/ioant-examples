@@ -85,19 +85,15 @@ class Twin:
 s1 = Twin()
 
 #===================================================
-def publishGowData(p1, ipayload, n ):
+def publishGowData(p1, ipayload):
 #===================================================
-        global g_gow_server
-	global g_period
-	global g_gow_topic
-	
 	url = p1.g_gow_server
 	server = 'gowServer.php'
 	data = {}
 	# meta data
 	data['do']     = 'data'
 	data['topic']  = p1.g_gow_topic
-	data['no']     = n
+	data['no']     = p1.r_counter
 	data['wrap']   = 999999
 	data['ts']     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	data['period'] = p1.g_period
@@ -590,7 +586,7 @@ def heater_model(p1):
 	payload += '"temperature_water_in" : "' + str(p1.temperature_water_in) + '",\n'
 	payload += '"temperature_smoke" : "' + str(p1.temperature_smoke) + '"\n'
 	payload += '}\n'
-	publishGowData( payload, p1.r_counter )
+	publishGowData( p1, payload)
 	
 	return
 #=====================================================
