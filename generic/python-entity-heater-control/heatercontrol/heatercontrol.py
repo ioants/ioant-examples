@@ -508,7 +508,7 @@ def heater_model(p1):
 			if p1.temp_smoke_ave < p1.g_minsmoke:
 				p1.r_state = p1.STATE_OFF
 				write_log("STATE_WARMING -> STATE_OFF")
-				p1.r_uptime = 0
+				p1.r_onoff = 0
 		if p1.r_state == p1.STATE_ON:
 			action = 0
 			if p1.r_inertia > 0: # delay after latest order
@@ -518,7 +518,7 @@ def heater_model(p1):
 				action += 2
 				p1.r_state = p1.STATE_OFF
 				write_log("STATE_ON -> STATE_OFF")
-				p1.r_uptime = 0
+				p1.r_onoff = 0
 			if p1.temperature_indoor > 20: # no warming above 20
 				action += 4
 			if p1.temperature_water_in > p1.temperature_water_out: # no cooling
@@ -581,7 +581,7 @@ def heater_model(p1):
 	payload += '"mode" : "' + str(p1.r_mode) + '",\n'
 	payload += '"state" : "' + str(p1.r_state) + '",\n'
 	payload += '"inertia" : "' + str(p1.r_inertia) + '",\n'
-	payload += '"onofftime" : "' + str(p1.r_onoff) + '",\n'
+	payload += '"onoff" : "' + str(p1.r_onoff) + '",\n'
 	payload += '"temperature_water_out" : "' + str(p1.temperature_water_out) + '",\n'
 	payload += '"temperature_water_in" : "' + str(p1.temperature_water_in) + '",\n'
 	payload += '"temperature_smoke" : "' + str(p1.temperature_smoke) + '"\n'
@@ -695,7 +695,7 @@ def setup(configuration):
 	s1.g_maxheat = float(configuration["algorithm"]["maxheat"])
 	s1.g_x_0 = float(configuration["algorithm"]["x_0"])
 	s1.g_y_0 = float(configuration["algorithm"]["y_0"])
-	s1.g_uptime = int(configuration["algorithm"]["onofftime"])
+	s1.g_onoff = int(configuration["algorithm"]["onofftime"])
 	s1.g_inertia = int(configuration["algorithm"]["inertia"])
 	s1.g_relax = float(configuration["algorithm"]["relax"])
 	s1.g_max_energy = float(configuration["algorithm"]["maxenergy"])
@@ -705,7 +705,7 @@ def setup(configuration):
 	s1.r_mode = s1.MODE_OFFLINE
 	write_log("START -> MODE_OFFLINE")
 	s1.r_inertia = s1.g_inertia
-	s1.r_uptime = s1.g_uptime
+	s1.r_onoff = s1.g_onoff
 
 	init_log()
 	init_history()
