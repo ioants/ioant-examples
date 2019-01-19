@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-01-18
+# Date: 2019-01-19
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -16,51 +16,91 @@ import time
 import datetime
 
 logger = logging.getLogger(__name__)
-temperature_indoor    = 999
-temperature_outdoor   = 999
-temperature_water_in  = 999
-temperature_water_out = 999
-temperature_smoke     = 999
-STATE_INIT = 0
-STATE_OFF = 1
-STATE_WARMING = 2
-STATE_ON = 3
-MODE_OFFLINE = 1
-MODE_ONLINE = 2
-g_minsteps = 5
-g_maxsteps = 30
-g_defsteps = 10
-g_minsmoke = 27
-g_mintemp = -7
-g_maxtemp = 10
-g_minheat = 20
-g_maxheat = 40
-g_x_0 = 0
-g_y_0 = 35
-g_relax = 3.0
-timeout_temperature_indoor = 60
-timeout_temperature_outdoor = 60
-timeout_temperature_water_in = 60
-timeout_temperature_water_out = 60
-timeout_temperature_smoke = 60
-g_counter = 0
+#======================================
+class Twin:
+   # state
+   r_state   = 0
+   r_mode    = 0
+   r_inertia = 0
+   r_onoff   = 0
+   r_counter = 0
+
+   g_inertia = 0
+   g_onoff   = 0
+   g_period  = 0
+
+   STATE_INIT    = 0
+   STATE_OFF     = 1
+   STATE_WARMING = 2
+   STATE_ON      = 3
+
+   MODE_OFFLINE  = 1
+   MODE_ONLINE   = 2
+
+   # Subscriptions
+   temperature_indoor    = 0.0
+   temperature_outdoor   = 0.0
+   temperature_water_in  = 0.0
+   temperature_water_out = 0.0
+   temperature_smoke     = 0.0
+   temp_smoke_ave        = 0.0
+   v1 = 0.0
+   v2 = 0.0
+   v3 = 0.0
+
+   hash_indoor    = 0
+   hash_outdoor   = 0
+   hash_water_in  = 0
+   hash_water_out = 0
+   hash_smoke     = 0
+
+   timeout_temperature_indoor    = 60
+   timeout_temperature_outdoor   = 60
+   timeout_temperature_water_in  = 60
+   timeout_temperature_water_out = 60
+   timeout_temperature_smoke     = 60
+
+   # algorithm configuration
+   g_mintemp = 0.0
+   g_maxtemp = 0.0
+   g_minheat = 0.0
+   g_maxheat = 0.0
+   g_x_0     = 0.0
+   g_y_0     = 0.0
+   g_relax   = 4.0
+   g_min_smoke = 0.0
+   g_minsteps  = 0
+   g_maxsteps  = 0
+   g_defsteps  = 0  
+   g_max_energy = 0 
+ 
+   # other
+   g_tmax = 0
+   g_tmin = 0
+
+   # gow
+   g_gow_server = 'test.com'
+   g_gow_topic  = 'test/topic'
+#======================================
+s1 = Twin()
+
 #===================================================
-def publishGowData( ipayload, n ):
+def publishGowData(p1, ipayload, n ):
 #===================================================
         global g_gow_server
 	global g_period
 	global g_gow_topic
 	
-	url = g_gow_server
+	url = p1.g_gow_server
 	server = 'gowServer.php'
 	data = {}
 	# meta data
 	data['do']     = 'data'
-	data['topic']  = g_gow_topic
+	data['topic']  = p1.g_gow_topic
 	data['no']     = n
 	data['wrap']   = 999999
 	data['ts']     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	data['period'] = g_period
+	data['period'] = p1,g_period
 	data['hw']     = 'python'
 	data['hash']   = 'nohash'
 	# payload
@@ -156,7 +196,6 @@ def init_log():
     return
 #=====================================================
 def publishStepperMsg(steps, direction):
-    global g_stepperpos
     msg = "ORDER steps to move: "+str(steps) + " dir:" + str(direction)
     write_history(msg)
     print msg
@@ -312,20 +351,19 @@ def publishStep(value):
     topic['client_id'] = configuration["publish_topic"]["steps"]["client_id"]
     topic['stream_index'] = 0
     ioant.publish(out_msg, topic)
-#==========================================
 #=====================================================
-def show_state_mode(st,mo):
-	if st == STATE_INIT:
+def show_state_mode(p1,st,mo):
+	if st == p1.STATE_INIT:
 		print "STATE_INIT"
-	if st == STATE_OFF:
+	if st == p1.STATE_OFF:
 		print "STATE_OFF"
-	if st == STATE_WARMING:
+	if st == p1.STATE_WARMING:
 		print "STATE_WARMING"
-	if st == STATE_ON:
+	if st == p1.STATE_ON:
 		print "STATE_ON"
-	if mo == MODE_OFFLINE:
+	if mo == p1.MODE_OFFLINE:
 		print "MODE_OFFLINE"
-	if mo == MODE_ONLINE:
+	if mo == p1.MODE_ONLINE:
 		print "MODE_ONLINE"
 #=====================================================
 def show_action_bit_info(a):
