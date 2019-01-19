@@ -582,15 +582,15 @@ def heater_model(p1):
 	payload += '"flags" : "' + str(action) + '",\n'
 	payload += '"steps" : "' + str(steps) + '",\n'
 	payload += '"target" : "' + str(y) + '",\n'
-	payload += '"mode" : "' + str(r_mode) + '",\n'
-	payload += '"state" : "' + str(r_state) + '",\n'
-	payload += '"inertia" : "' + str(r_inertia) + '",\n'
-	payload += '"onofftime" : "' + str(r_uptime) + '",\n'
-	payload += '"temperature_water_out" : "' + str(temperature_water_out) + '",\n'
-	payload += '"temperature_water_in" : "' + str(temperature_water_in) + '",\n'
-	payload += '"temperature_smoke" : "' + str(temperature_smoke) + '"\n'
+	payload += '"mode" : "' + str(p1.r_mode) + '",\n'
+	payload += '"state" : "' + str(p1.r_state) + '",\n'
+	payload += '"inertia" : "' + str(p1.r_inertia) + '",\n'
+	payload += '"onofftime" : "' + str(p1.r_onoff) + '",\n'
+	payload += '"temperature_water_out" : "' + str(p1.temperature_water_out) + '",\n'
+	payload += '"temperature_water_in" : "' + str(p1.temperature_water_in) + '",\n'
+	payload += '"temperature_smoke" : "' + str(p1.temperature_smoke) + '"\n'
 	payload += '}\n'
-	publishGowData( payload, g_counter )
+	publishGowData( payload, p1.r_counter )
 	
 	return
 #=====================================================
