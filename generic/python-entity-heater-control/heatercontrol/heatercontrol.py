@@ -615,209 +615,160 @@ def subscribe_to_topic(par,msgt):
     shash = getTopicHash(topic)
     return shash
 #=====================================================
-def find_extreme(x1,x2,x3):
-	global tmax,tmin
+def find_extreme(p1):
 	t = datetime.datetime.now() 
-	print "min-max: " + str(x1) + " " + str(x2) + " " + str(x3)
-	if x1 > x2 and x2 > x3:
+	print "min-max: " + str(p1.v1) + " " + str(p1.v2) + " " + str(p1.v3)
+	if p1.v1 > p1.v2 and p1.v2 > p1.v3:
 		print "values falling"
-	if x1 < x2 and x2 < x3:
+	if p1.v1 < p1.v2 and p1.v2 < p1.v3:
 		print "values rising"
-	if x1 >= x2 and x2 < x3: # minimum
-		d = t - tmin
+	if p1.v1 >= p1.v2 and p1.v2 < p1.v3: # minimum
+		d = t - p1.tmin
 		f = d.seconds
-		tmin = t
+		p1.tmin = t
 		publishFrequence(f)
 		publishExtreme(1)
-	if x1 <= x2 and x2 > x3: # maximum
-		d = t - tmax
+	if p1.v1 <= p1.v2 and p1.v2 > p1.v3: # maximum
+		d = t - p1.tmax
 		f = d.seconds
-		tmax = t
+		p1.tmax = t
 		publishFrequence(f)
 		publishExtreme(2)	
 #=====================================================
 def setup(configuration):
-	global v1,v2,v3
-	v1 = 30.0
-	v2 = 30.0
-	v3 = 30.0
-	global tmin,tmax
-	tmin = datetime.datetime.now() 
-	tmax = datetime.datetime.now() 
-    # Configuration
-	global g_minsteps,g_maxsteps,g_defsteps
-	global g_minsmoke,g_max_energy
-	global g_mintemp,g_maxtemp
-	global g_minheat,g_maxheat
-	global g_x_0,g_y_0
-	global g_uptime
-	global g_relax
-	global r_inertia
-	global g_current_position
-	global r_uptime
-	global g_state
-	global g_mode
-	global g_inertia
-	global STATE_INIT
-	global STATE_OFF
-	global STATE_WARMING
-	global STATE_ON
-	global MODE_OFFLINE
-	global MODE_ONLINE
-	global g_counter
-	global g_gow_server
-	global g_period
-	global g_gow_topic
+	global s1
 
-	g_counter = 0
-	STATE_INIT = 0
-	STATE_OFF = 1
-	STATE_WARMING = 2
-	STATE_ON = 3
-	MODE_OFFLINE = 1
-	MODE_ONLINE = 2
-	g_minsteps = 5
-	g_maxsteps = 30
-	g_defsteps = 10
-	g_minsmoke = 27
-	g_mintemp = -7
-	g_maxtemp = 10
-	g_minheat = 20
-	g_maxheat = 40
-	g_x_0 = 0
-	g_y_0 = 35
-	g_relax = 3.0
-	g_max_energy = 4.0
-	g_period = 5000
-	g_gow_server = 'gow.test.com'
-	g_gow_topic = 'etc/etc/etc/0'
-	g_current_position = read_position()
-	global temperature_indoor
-	global temperature_outdoor
-	global temperature_water_in
-	global temperature_water_out
-	global temperature_smoke
-	temperature_indoor    = 999
-	temperature_outdoor   = 999
-	temperature_water_in  = 999
-	temperature_water_out = 999
-	temperature_smoke     = 999
-	global timeout_temperature_indoor
-	global timeout_temperature_outdoor
-	global timeout_temperature_water_in
-	global timeout_temperature_water_out
-	global timeout_temperature_smoke
-	timeout_temperature_indoor = 60
-	timeout_temperature_outdoor = 60
-	timeout_temperature_water_in = 60
-	timeout_temperature_water_out = 60
-	timeout_temperature_smoke = 60
+	s1.v1 = 30.0
+	s1.v2 = 30.0
+	s1.v3 = 30.0
+
+	s1.tmin = datetime.datetime.now() 
+	s1.tmax = datetime.datetime.now() 
+
+	s1.r_counter = 0
+	
+	s1.STATE_INIT = 0
+	s1.STATE_OFF = 1
+	s1.STATE_WARMING = 2
+	s1.STATE_ON = 3
+	s1.MODE_OFFLINE = 1
+	s1.MODE_ONLINE = 2
+	
+	s1.g_minsteps = 5
+	s1.g_maxsteps = 30
+	s1.g_defsteps = 10
+	s1.g_minsmoke = 27
+	s1.g_mintemp = -7
+	s1.g_maxtemp = 10
+	s1.g_minheat = 20
+	s1.g_maxheat = 40
+	
+	s1.g_x_0 = 0
+	s1.g_y_0 = 35
+	s1.g_relax = 3.0
+	s1.g_max_energy = 4.0
+	s1.g_period = 5000
+	s1.g_gow_server = 'gow.test.com'
+	s1.g_gow_topic = 'etc/etc/etc/0'
+
+	s1.temperature_indoor    = 999
+	s1.temperature_outdoor   = 999
+	s1.temperature_water_in  = 999
+	s1.temperature_water_out = 999
+	s1.temperature_smoke     = 999
+
+	s1.timeout_temperature_indoor = 60
+	s1.timeout_temperature_outdoor = 60
+	s1.timeout_temperature_water_in = 60
+	s1.timeout_temperature_water_out = 60
+	s1.timeout_temperature_smoke = 60
+	
 	ioant.setup(configuration)
 	configuration = ioant.get_configuration()
-	g_period   = int(configuration["ioant"]["communication_delay"])
-	g_period   = round(g_period/1000)
-	g_gow_server = str(configuration["gow_server"])
-	g_gow_topic = str(configuration["gow_topic"])
-	g_minsteps = int(configuration["algorithm"]["minsteps"])
-	g_maxsteps = int(configuration["algorithm"]["maxsteps"])
-	g_defsteps = int(configuration["algorithm"]["defsteps"])
-	g_minsmoke = float(configuration["algorithm"]["minsmoke"])
-	g_mintemp = float(configuration["algorithm"]["mintemp"])
-	g_maxtemp = float(configuration["algorithm"]["maxtemp"])
-	g_minheat = float(configuration["algorithm"]["minheat"])
-	g_maxheat = float(configuration["algorithm"]["maxheat"])
-	g_x_0 = float(configuration["algorithm"]["x_0"])
-	g_y_0 = float(configuration["algorithm"]["y_0"])
-	g_uptime = int(configuration["algorithm"]["onofftime"])
-	g_inertia = int(configuration["algorithm"]["inertia"])
-	g_relax = float(configuration["algorithm"]["relax"])
-	g_max_energy = float(configuration["algorithm"]["maxenergy"])
+	tempv   = int(configuration["ioant"]["communication_delay"])
+	s1.g_period   = round(tempv/1000)
+	s1.g_gow_server = str(configuration["gow_server"])
+	s1.g_gow_topic = str(configuration["gow_topic"])
+	s1.g_minsteps = int(configuration["algorithm"]["minsteps"])
+	s1.g_maxsteps = int(configuration["algorithm"]["maxsteps"])
+	s1.g_defsteps = int(configuration["algorithm"]["defsteps"])
+	s1.g_minsmoke = float(configuration["algorithm"]["minsmoke"])
+	s1.g_mintemp = float(configuration["algorithm"]["mintemp"])
+	s1.g_maxtemp = float(configuration["algorithm"]["maxtemp"])
+	s1.g_minheat = float(configuration["algorithm"]["minheat"])
+	s1.g_maxheat = float(configuration["algorithm"]["maxheat"])
+	s1.g_x_0 = float(configuration["algorithm"]["x_0"])
+	s1.g_y_0 = float(configuration["algorithm"]["y_0"])
+	s1.g_uptime = int(configuration["algorithm"]["onofftime"])
+	s1.g_inertia = int(configuration["algorithm"]["inertia"])
+	s1.g_relax = float(configuration["algorithm"]["relax"])
+	s1.g_max_energy = float(configuration["algorithm"]["maxenergy"])
 
-	g_state = STATE_OFF
+	s1.r_state = STATE_OFF
 	write_log("START -> STATE_OFF")
-	g_mode = MODE_OFFLINE
+	s1.r_mode = MODE_OFFLINE
 	write_log("START -> MODE_OFFLINE")
-	r_inertia = g_inertia
-	r_uptime = g_uptime
+	s1.r_inertia = s1.g_inertia
+	s1.r_uptime = s1.g_uptime
 
 	init_log()
 	init_history()
 
 #=====================================================
 def loop():
-    global r_inertia
-    global g_counter
+    global s1
     ioant.update_loop()
-    g_counter += 1
-    if g_counter > 999999:
-	g_counter = 0
-    heater_model()
+    s1.r_counter += 1
+    if s1.r_counter > 999999:
+	s1.r_counter = 0
+    heater_model(s1)
 
 #=====================================================
 def on_message(topic, message):
-	global hash_indoor
-	global hash_outdoor
-	global hash_water_in
-	global hash_water_out
-	global hash_smoke
-	global temperature_indoor
-	global temperature_outdoor
-	global temperature_water_in
-	global temperature_water_out
-	global temperature_smoke
-	global timeout_temperature_indoor
-	global timeout_temperature_outdoor
-	global timeout_temperature_water_in
-	global timeout_temperature_water_out
-	global timeout_temperature_smoke
-	global v1,v2,v3,temp_smoke_ave
+	global s1
 	""" Message function. Handles recieved message from broker """
 	if topic["message_type"] == ioant.get_message_type("Temperature"):
 		shash = getTopicHash(topic)
 		#logging.info("Temp = "+str(message.value)+" hash="+str(shash))
-		if shash == hash_indoor:
+		if shash == s1.hash_indoor:
 			print "===> indoor " + str(message.value)
-			temperature_indoor = message.value
-			timeout_temperature_indoor = 60
-		if shash == hash_outdoor:
+			s1.temperature_indoor = message.value
+			s1.timeout_temperature_indoor = 60
+		if shash == s1.hash_outdoor:
 			print "===> outdoor " + str(message.value)
-			temperature_outdoor = message.value
-			timeout_temperature_outdoor = 60
-		if shash == hash_water_in:
+			s1.temperature_outdoor = message.value
+			s1.timeout_temperature_outdoor = 60
+		if shash == s1.hash_water_in:
 			print "===> water in " + str(message.value)
-			temperature_water_in = message.value
-			timeout_temperature_water_in = 60
-		if shash == hash_water_out:
+			s1.temperature_water_in = message.value
+			s1.timeout_temperature_water_in = 60
+		if shash == s1.hash_water_out:
 			print "===> water out " + str(message.value)
-			temperature_water_out = message.value
-			timeout_temperature_water_out = 60
-		if shash == hash_smoke:
+			s1.temperature_water_out = message.value
+			s1.timeout_temperature_water_out = 60
+		if shash == s1.hash_smoke:
 			print "===> smoke " + str(message.value)
-			temperature_smoke = message.value
-			timeout_temperature_smoke = 60
-			v1 = v2
-			v2 = v3
-			v3 = temperature_smoke
-			temp_smoke_ave = (v1 + v2 + v3)/3
-			find_extreme(v1,v2,v3)
+			s1.temperature_smoke = message.value
+			s1.timeout_temperature_smoke = 60
+			s1.v1 = s1.v2
+			s1.v2 = s1.v3
+			s1.v3 = s1.temperature_smoke
+			s1.temp_smoke_ave = (s1.v1 + s1.v2 + s1.v3)/3
+			find_extreme(s1)
 
     #if "Temperature" == ioant.get_message_type_name(topic[message_type]):
 
 #=====================================================
 def on_connect():
     """ On connect function. Called when connected to broker """
-    global hash_indoor
-    global hash_outdoor
-    global hash_water_in
-    global hash_water_out
-    global hash_smoke
+    global s1
 
     # There is now a connection
-    hash_indoor    = subscribe_to_topic("indoor","Temperature")
-    hash_outdoor   = subscribe_to_topic("outdoor","Temperature")
-    hash_water_in  = subscribe_to_topic("water_in","Temperature")
-    hash_water_out = subscribe_to_topic("water_out","Temperature")
-    hash_smoke     = subscribe_to_topic("smoke","Temperature")
+    s1.hash_indoor    = subscribe_to_topic("indoor","Temperature")
+    s1.hash_outdoor   = subscribe_to_topic("outdoor","Temperature")
+    s1.hash_water_in  = subscribe_to_topic("water_in","Temperature")
+    s1.hash_water_out = subscribe_to_topic("water_out","Temperature")
+    s1.hash_smoke     = subscribe_to_topic("smoke","Temperature")
 
 # =============================================================================
 # Above this line are mandatory functions
