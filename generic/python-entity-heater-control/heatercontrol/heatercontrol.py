@@ -100,7 +100,7 @@ def publishGowData(p1, ipayload, n ):
 	data['no']     = n
 	data['wrap']   = 999999
 	data['ts']     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	data['period'] = p1,g_period
+	data['period'] = p1.g_period
 	data['hw']     = 'python'
 	data['hash']   = 'nohash'
 	# payload
@@ -396,54 +396,20 @@ def show_action_bit_info(a):
 	print message
 	write_history(message)
 #=====================================================
-def heater_model():
-	global g_minsteps,g_maxsteps,g_defsteps
-	global g_minsmoke
-	global g_mintemp,g_maxtemp
-	global g_minheat,g_maxheat
-	global g_x_0,g_y_0
-	global g_relax
-	global r_inertia
-	global g_max_energy
-	global g_current_position
-	global r_uptime
-	global g_state
-	global g_mode
-	global g_inertia
-	global g_uptime
-	global temperature_indoor
-	global temperature_outdoor
-	global temperature_water_in
-	global temperature_water_out
-	global temperature_smoke
-	global timeout_temperature_indoor
-	global timeout_temperature_outdoor
-	global timeout_temperature_water_in
-	global timeout_temperature_water_out
-	global timeout_temperature_smoke
-	global temp_smoke_ave
-	global g_period
-	global g_counter
-	global STATE_INIT
-	global STATE_OFF
-	global STATE_WARMING
-	global STATE_ON
-	global MODE_OFFLINE
-	global MODE_ONLINE
-	
-	publishInertia(r_inertia)
-	publishState(g_state)
-	publishMode(g_mode)
-	if r_uptime < g_uptime:
-		publishOnOff(r_uptime)
+def heater_model(p1):	
+	publishInertia(p1.r_inertia)
+	publishState(p1.g_state)
+	publishMode(p1.g_mode)
+	if p1.r_onoff < p1.g_onoff:
+		publishOnOff(p1.r_onoff)
 
 	CLOCKWISE = 0 # decrease
 	COUNTERCLOCKWISE = 1 # increase
 
-	coeff1 = (g_maxheat - g_y_0)/(g_mintemp - g_x_0)
-	mconst1 = g_y_0 - coeff1*g_x_0
-	coeff2 = (g_y_0 - g_minheat)/(g_x_0 - g_maxtemp)
-	mconst2 = g_minheat - coeff2*g_maxtemp
+	coeff1 = (p1.g_maxheat - p1.g_y_0)/(p1.g_mintemp - p1.g_x_0)
+	mconst1 = p1.g_y_0 - coeff1*p1.g_x_0
+	coeff2 = (p1.g_y_0 - p1.g_minheat)/(p1.g_x_0 - p1.g_maxtemp)
+	mconst2 = p1.g_minheat - coeff2*p1.g_maxtemp
 
 	y = 999
 	energy = 999
@@ -454,25 +420,25 @@ def heater_model():
 
 	# If necessary data not available: do nothing
 	ndi = 0
-	if temperature_outdoor == 999:
+	if p1.temperature_outdoor == 999:
 		message = "No data - temperature_outdoor"
 		write_log(message)
 		#write_history(message)
 		ndi = ndi + 1
 
-	if temperature_water_out == 999:
+	if p1.temperature_water_out == 999:
 		message = "No data - temperature_water_out"
 		write_log(message)
 		#write_history(message)
 		ndi = ndi + 1
 
-	if temperature_water_in == 999:
+	if p1.temperature_water_in == 999:
 		message = "No data - temperature_water_in"
 		write_log(message)
 		#write_history(message)
 		ndi = ndi + 1
 
-	if temperature_smoke == 999:
+	if p1.temperature_smoke == 999:
 		message = "No data - temperature_smoke"
 		write_log(message)
 		#write_history(message)
@@ -487,108 +453,108 @@ def heater_model():
 
 	old_data = 0
 
-	timeout_temperature_indoor -= 1
-	timeout_temperature_outdoor -= 1
-	timeout_temperature_water_in -= 1
-	timeout_temperature_water_out -= 1
-	timeout_temperature_smoke -= 1
+	p1.timeout_temperature_indoor -= 1
+	p1.timeout_temperature_outdoor -= 1
+	p1.timeout_temperature_water_in -= 1
+	p1.timeout_temperature_water_out -= 1
+	p1.timeout_temperature_smoke -= 1
 
-	if timeout_temperature_indoor < 1:
-		message = "Old data - temperature_indoor " + str(timeout_temperature_indoor)
+	if p1.timeout_temperature_indoor < 1:
+		message = "Old data - temperature_indoor " + str(p1.timeout_temperature_indoor)
 		write_log(message)
 		write_history(message)
 		old_data= 1
-	if timeout_temperature_outdoor < 1:
-		message = "Old data - temperature_outdoor " + str(timeout_temperature_outdoor)
+	if p1.timeout_temperature_outdoor < 1:
+		message = "Old data - temperature_outdoor " + str(p1.timeout_temperature_outdoor)
 		write_log(message)
 		write_history(message)
 		old_data= 1
-	if timeout_temperature_water_in < 1:
-		message = "Old data - temperature_water_in " + str(timeout_temperature_water_in)
-		write_log(message)
-		write_history(message)
-		old_data= 1
-
-	if timeout_temperature_water_out < 1:
-		message = "Old data - temperature_water_out " + str(timeout_temperature_water_out)
-		write_log(message)
-		write_history(message)
-		old_data= 1
-	if timeout_temperature_smoke < 1:
-		message = "Old data - temperature_smoke " + str(timeout_temperature_smoke)
+	if p1.timeout_temperature_water_in < 1:
+		message = "Old data - temperature_water_in " + str(p1.timeout_temperature_water_in)
 		write_log(message)
 		write_history(message)
 		old_data= 1
 
+	if p1.timeout_temperature_water_out < 1:
+		message = "Old data - temperature_water_out " + str(p1.timeout_temperature_water_out)
+		write_log(message)
+		write_history(message)
+		old_data= 1
+	if p1.timeout_temperature_smoke < 1:
+		message = "Old data - temperature_smoke " + str(p1.timeout_temperature_smoke)
+		write_log(message)
+		write_history(message)
+		old_data= 1
 
-	if g_mode == MODE_OFFLINE:
+
+	if p1.r_mode == p1.MODE_OFFLINE:
 		if all_data_is_available == 1:
-			g_mode = MODE_ONLINE
+			p1.r_mode = p1.MODE_ONLINE
 			write_log("MODE_OFFLINE -> MODE_ONLINE")
-			r_inertia = g_inertia
-	if g_mode == MODE_ONLINE:
+			p1.r_inertia = p1.g_inertia
+	if p1.r_mode == p1.MODE_ONLINE:
 		old_data = 0
 		if old_data == 1:
-			g_mode = MODE_OFFLINE
+			p1.r_mode = p1.MODE_OFFLINE
 			write_log("MODE_ONLINE -> MODE_OFFLINE")
-		if g_state == STATE_OFF:
-			r_uptime -= 1
-			if r_uptime < 0:
-				r_uptime = 0
-			if temperature_smoke > g_minsmoke:
-				g_state = STATE_WARMING
+		if p1.r_state == p1.STATE_OFF:
+			p1.r_onoff -= 1
+			if p1.r_onoff < 0:
+				p1.r_onoff = 0
+			if p1.temperature_smoke > p1.g_minsmoke:
+				p1.r_state = p1.STATE_WARMING
 				write_log("STATE_OFF -> STATE_WARMING")
-		if g_state == STATE_WARMING:
-			r_uptime += 1
-			if r_uptime == g_uptime:
-				g_state = STATE_ON
+		if p1.r_state == p1.STATE_WARMING:
+			p1.r_onoff += 1
+			if p1.r_onoff == p1.g_onoff:
+				p1.r_state = p1.STATE_ON
 				write_log("STATE_WARMING -> STATE_ON")
-			if temp_smoke_ave < g_minsmoke:
-				g_state = STATE_OFF
+			if p1.temp_smoke_ave < p1.g_minsmoke:
+				p1.r_state = p1.STATE_OFF
 				write_log("STATE_WARMING -> STATE_OFF")
-				r_uptime = 0
-		if g_state == STATE_ON:
+				p1.r_uptime = 0
+		if p1.r_state == p1.STATE_ON:
 			action = 0
-			if r_inertia > 0: # delay after latest order
-				r_inertia -= 1
+			if p1.r_inertia > 0: # delay after latest order
+				p1.r_inertia -= 1
 				action += 1
-			if temp_smoke_ave < g_minsmoke: # heater is off
+			if p1.temp_smoke_ave < p1.g_minsmoke: # heater is off
 				action += 2
-				g_state = STATE_OFF
+				p1.g_state = p1.STATE_OFF
 				write_log("STATE_ON -> STATE_OFF")
-				r_uptime = 0
-			if temperature_indoor > 20: # no warming above 20
+				p1.r_uptime = 0
+			if p1.temperature_indoor > 20: # no warming above 20
 				action += 4
-			if temperature_water_in > temperature_water_out: # no cooling
+			if p1.temperature_water_in > p1.temperature_water_out: # no cooling
 				action += 8
 
-			temp = temperature_outdoor
+			temp = p1.temperature_outdoor
 
-			if temp > g_maxtemp:
-				temp = g_maxtemp
-			if temp < g_mintemp:
-				temp = g_mintemp
+			if temp > p1.g_maxtemp:
+				temp = p1.g_maxtemp
+			if temp < p1.g_mintemp:
+				temp = p1.g_mintemp
 
-			if temp < g_x_0:
+			if temp < p1.g_x_0:
 				y = coeff1*temp + mconst1
 			else:
 				y = coeff2*temp + mconst2
 
 			publishWanted(y)
-			tmp1 = y*g_relax
-			tmp2 = temperature_water_out*g_relax
+			tmp1 = y*p1.g_relax
+			tmp2 = p1.temperature_water_out*p1.g_relax
 			tmp3 = tmp1 - tmp2
 			steps = round(tmp3)
 			print "tmp1=" + str(tmp1) + " tmp2="+str(tmp2) + " tmp3=" + str(tmp3)
-			print "g_relax = " + str(g_relax)
+			print "g_relax = " + str(p1.g_relax)
 			print "steps = " + str(steps)
-			print "temperature_water_out = " + str(temperature_water_out)
+			print "temperature_water_out = " + str(p1.temperature_water_out)
 			publishStep(steps)
-			if abs(steps) < g_minsteps: # min steps
+			if abs(steps) < p1.g_minsteps: # min steps
 				action += 16
 
-			energy = temperature_water_out - temperature_water_in
-			if energy > g_max_energy and steps > 0:
+			energy = p1.temperature_water_out - p1.temperature_water_in
+			if energy > p1.g_max_energy and steps > 0:
 				action += 64
 
 			if steps > 0:
@@ -598,21 +564,17 @@ def heater_model():
 			if steps == 0:
 				action += 32
 
-			if steps > g_maxsteps:
-				steps = g_maxsteps
+			if steps > p1.g_maxsteps:
+				steps = p1.g_maxsteps
 				
 			#show_action_bit_info(action)
 			
 			if action == 0:
 				publishStepperMsg(int(steps), direction)
 				print ">>>>>> Move Stepper " + str(steps) + " " + str(direction)
-				r_inertia = g_inertia
-				if direction == COUNTERCLOCKWISE:
-					g_current_position += steps
-				if direction == CLOCKWISE:
-					g_current_position -= steps
+				p1.r_inertia = p1.g_inertia
 #========================================================================
-	show_state_mode(g_state,g_mode)
+	show_state_mode(p1)
    	if energy < 999:
 		publishEnergyMsg(energy)
 
