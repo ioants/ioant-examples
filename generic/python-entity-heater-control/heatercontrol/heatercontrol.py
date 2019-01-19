@@ -704,9 +704,9 @@ def setup(configuration):
 	s1.g_relax = float(configuration["algorithm"]["relax"])
 	s1.g_max_energy = float(configuration["algorithm"]["maxenergy"])
 
-	s1.r_state = STATE_OFF
+	s1.r_state = s1.STATE_OFF
 	write_log("START -> STATE_OFF")
-	s1.r_mode = MODE_OFFLINE
+	s1.r_mode = s1.MODE_OFFLINE
 	write_log("START -> MODE_OFFLINE")
 	s1.r_inertia = s1.g_inertia
 	s1.r_uptime = s1.g_uptime
