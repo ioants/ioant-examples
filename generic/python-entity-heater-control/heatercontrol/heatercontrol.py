@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-01-19
+# Date: 2019-01-20
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -484,12 +484,11 @@ def heater_model(p1):
 
 
 	if p1.r_mode == p1.MODE_OFFLINE:
-		if all_data_is_available == 1:
+		if all_data_is_available == 1 and old_data == 0:
 			p1.r_mode = p1.MODE_ONLINE
 			write_log("MODE_OFFLINE -> MODE_ONLINE")
 			p1.r_inertia = p1.g_inertia
 	if p1.r_mode == p1.MODE_ONLINE:
-		old_data = 0
 		if old_data == 1:
 			p1.r_mode = p1.MODE_OFFLINE
 			write_log("MODE_ONLINE -> MODE_OFFLINE")
