@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-01-20
+# Date: 2019-01-21
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -540,6 +540,7 @@ def heater_model(p1):
 			tmp2 = p1.temperature_water_out*p1.g_relax
 			tmp3 = tmp1 - tmp2
 			steps = round(tmp3)
+			publishFrequence(p1.temperature_water_out)
 			print "tmp1=" + str(tmp1) + " tmp2="+str(tmp2) + " tmp3=" + str(tmp3)
 			print "g_relax = " + str(p1.g_relax)
 			print "steps = " + str(steps)
@@ -621,13 +622,13 @@ def find_extreme(p1):
 		d = t - p1.tmin
 		f = d.seconds
 		p1.tmin = t
-		publishFrequence(f)
+		#publishFrequence(f)
 		publishExtreme(1)
 	if p1.v1 <= p1.v2 and p1.v2 > p1.v3: # maximum
 		d = t - p1.tmax
 		f = d.seconds
 		p1.tmax = t
-		publishFrequence(f)
+		#publishFrequence(f)
 		publishExtreme(2)	
 #=====================================================
 def setup(configuration):
