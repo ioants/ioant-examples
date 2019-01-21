@@ -717,7 +717,10 @@ def loop():
     s1.r_counter += 1
     if s1.r_counter > 999999:
 	s1.r_counter = 0
-    heater_model(s1)
+    
+    mtemp = s1.r_counter % 5
+    if mtemp == 0:
+	heater_model(s1)
 
 #=====================================================
 def on_message(topic, message):
