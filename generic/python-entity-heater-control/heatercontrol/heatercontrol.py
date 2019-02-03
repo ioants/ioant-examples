@@ -657,7 +657,7 @@ def find_extreme(p1):
 		publishExtreme(2)	
 #=====================================================
 def setup(configuration):
-	global s1,p1
+	global s1
 
 	s1.v1 = 30.0
 	s1.v2 = 30.0
@@ -734,7 +734,7 @@ def setup(configuration):
 
 	init_log()
 	init_history()
-	publishGowStatic(p1)
+	publishGowStatic(s1)
 #=====================================================
 def loop():
     global s1
