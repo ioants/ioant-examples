@@ -92,6 +92,8 @@ def publishGowStatic(p1):
 	data = {}
 	# meta data
 	data['do']       = 'stat'
+	data['desc']     = 'pellets_heater'
+	data['tags']     = 'heater'
 	data['topic']    = p1.g_gow_topic
 	data['no']       = p1.r_counter
 	data['wrap']     = 999999
