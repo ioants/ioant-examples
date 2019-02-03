@@ -124,7 +124,6 @@ def publishGowDynamic(p1, ipayload):
 	data['rssi']     = 0
 	data['dev_ts']   = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	data['fail']     = 0
-	data['platform'] = 'python'
 	# payload
 	data['payload'] = ipayload
 	
@@ -612,7 +611,7 @@ def heater_model(p1):
 	payload += '"temperature_water_in" : "' + str(p1.temperature_water_in) + '",\n'
 	payload += '"temperature_smoke" : "' + str(p1.temperature_smoke) + '"\n'
 	payload += '}\n'
-	publishGowData( p1, payload)
+	publishGowDynamic( p1, payload)
 	
 	return
 #=====================================================
@@ -658,7 +657,7 @@ def find_extreme(p1):
 		publishExtreme(2)	
 #=====================================================
 def setup(configuration):
-	global s1
+	global s1,p1
 
 	s1.v1 = 30.0
 	s1.v2 = 30.0
@@ -735,7 +734,7 @@ def setup(configuration):
 
 	init_log()
 	init_history()
-
+	publishGowStatic(p1)
 #=====================================================
 def loop():
     global s1
