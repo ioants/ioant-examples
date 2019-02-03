@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-01-21
+# Date: 2019-02-03
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -85,20 +85,46 @@ class Twin:
 s1 = Twin()
 
 #===================================================
-def publishGowData(p1, ipayload):
+def publishGowStatic(p1):
 #===================================================
 	url = p1.g_gow_server
 	server = 'gowServer.php'
 	data = {}
 	# meta data
-	data['do']     = 'data'
-	data['topic']  = p1.g_gow_topic
-	data['no']     = p1.r_counter
-	data['wrap']   = 999999
-	data['ts']     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	data['period'] = p1.g_period
-	data['hw']     = 'python'
-	data['hash']   = 'nohash'
+	data['do']       = 'stat'
+	data['topic']    = p1.g_gow_topic
+	data['no']       = p1.r_counter
+	data['wrap']     = 999999
+	data['period']   = p1.g_period
+	data['platform'] = 'python'
+	data['url']      = p1.g_gow_server
+  	data['ssid']     = 'nowifi'
+	data['action']   = 1
+	
+	values = urllib.urlencode(data)
+	req = 'http://' + url + '/' + server + '?' + values
+	print req
+	try: 
+		response = urllib2.urlopen(req)
+		the_page = response.read()
+		print 'Message to ' + p1.g_gow_topic + ': ' + the_page
+		#evaluateAction(the_page)
+	except urllib2.URLError as e:
+		print e.reason
+#===================================================
+def publishGowDynamic(p1, ipayload):
+#===================================================
+	url = p1.g_gow_server
+	server = 'gowServer.php'
+	data = {}
+	# meta data
+	data['do']       = 'dyn'
+	data['topic']    = p1.g_gow_topic
+	data['no']       = p1.r_counter
+	data['rssi']     = 0
+	data['dev_ts']   = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+	data['fail']     = 0
+	data['platform'] = 'python'
 	# payload
 	data['payload'] = ipayload
 	
