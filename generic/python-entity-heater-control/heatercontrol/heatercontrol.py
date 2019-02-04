@@ -547,8 +547,7 @@ def heater_model(p1):
 				p1.r_onoff = 0
 			if p1.temperature_indoor > 20: # no warming above 20
 				action += 4
-			if p1.temperature_water_in > p1.temperature_water_out: # no cooling
-				action += 8
+
 
 			temp = p1.temperature_outdoor
 
@@ -573,6 +572,8 @@ def heater_model(p1):
 			print "steps = " + str(steps)
 			print "temperature_water_out = " + str(p1.temperature_water_out)
 			publishStep(steps)
+			if p1.temperature_water_in > p1.temperature_water_out and steps < 0: # no cooling
+				action += 8
 			if abs(steps) < p1.g_minsteps: # min steps
 				action += 16
 
