@@ -589,6 +589,8 @@ def heater_model(p1):
 
 			if steps > p1.g_maxsteps:
 				steps = p1.g_maxsteps
+			if steps < -p1.g_maxsteps:
+				steps = -p1.g_maxsteps
 				
 			#show_action_bit_info(action)
 			
