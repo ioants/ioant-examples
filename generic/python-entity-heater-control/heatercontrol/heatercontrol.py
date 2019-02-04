@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-02-03
+# Date: 2019-02-04
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -223,7 +223,7 @@ def publishStepperMsg(steps, direction):
     write_history(msg)
     print msg
     #return
-    if steps > 500: # same limit as stepper device
+    if steps > 50 or steps < -50: # same limit as stepper device
         print "Too many steps "+str(steps)
         return
     configuration = ioant.get_configuration()
