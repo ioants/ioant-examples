@@ -773,7 +773,7 @@ def on_message(topic, message):
 			s1.temperature_indoor_prev = s1.temperature_indoor
 			s1.temperature_indoor = message.value
 			diff  = s1.temperature_indoor - s1.temperature_indoor_prev
-			if abs(diff) > 20:
+			if abs(diff) > 20 and s1.temperature_indoor_prev != 999:
 				s1.temperature_indoor = s1.temperature_indoor_prev
 				s1.r_errors += 1
 			s1.timeout_temperature_indoor = 60
@@ -782,7 +782,7 @@ def on_message(topic, message):
 			s1.temperature_outdoor_prev = s1.temperature_outdoor
 			s1.temperature_outdoor = message.value
 			diff  = s1.temperature_outdoor - s1.temperature_outdoor_prev
-			if abs(diff) > 20:
+			if abs(diff) > 20 and s1.temperature_outdoor_prev != 999:
 				s1.temperature_outdoor = s1.temperature_outdoor_prev
 				s1.r_errors += 1
 			s1.timeout_temperature_outdoor = 60
@@ -791,7 +791,7 @@ def on_message(topic, message):
 			s1.temperature_water_in = s1.temperature_water_in
 			s1.temperature_water_in = message.value
 			diff  = s1.temperature_water_in - s1.temperature_water_in_prev
-			if abs(diff) > 20:
+			if abs(diff) > 20 and s1.temperature_water_in_prev != 999:
 				s1.temperature_water_in = s1.temperature_water_in_prev
 				s1.r_errors += 1
 			s1.timeout_temperature_water_in = 60
@@ -800,7 +800,7 @@ def on_message(topic, message):
 			s1.temperature_water_out_prev = s1.temperature_water_out
 			s1.temperature_water_out = message.value
 			diff  = s1.temperature_water_out - s1.temperature_water_out_prev
-			if abs(diff) > 20:
+			if abs(diff) > 20 and s1.temperature_water_out_prev != 999:
 				s1.temperature_water_out = s1.temperature_water_out_prev
 				s1.r_errors += 1
 			s1.timeout_temperature_water_out = 60
@@ -809,7 +809,7 @@ def on_message(topic, message):
 			s1.temperature_smoke_prev = s1.temperature_smoke
 			s1.temperature_smoke = message.value
 			diff  = s1.temperature_smoke - s1.temperature_smoke_prev
-			if abs(diff) > 20:
+			if abs(diff) > 20 and s1.temperature_smoke_prev != 999:
 				s1.temperature_smoke = s1.temperature_smoke_prev
 				s1.r_errors += 1
 			s1.timeout_temperature_smoke = 60
