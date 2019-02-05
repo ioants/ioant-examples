@@ -538,7 +538,7 @@ def heater_model(p1):
 			if p1.r_onoff == p1.g_onoff:
 				p1.r_state = p1.STATE_ON
 				write_log("STATE_WARMING -> STATE_ON")
-			if p1.temp_smoke_ave < p1.g_minsmoke:
+			if p1.temperature_smoke < p1.g_minsmoke:
 				p1.r_state = p1.STATE_OFF
 				write_log("STATE_WARMING -> STATE_OFF")
 				p1.r_onoff = 0
