@@ -788,7 +788,7 @@ def on_message(topic, message):
 			s1.timeout_temperature_outdoor = 60
 		if shash == s1.hash_water_in:
 			print "===> water in " + str(message.value)
-			s1.temperature_water_in = s1.temperature_water_in
+			s1.temperature_water_in_prev = s1.temperature_water_in
 			s1.temperature_water_in = message.value
 			diff  = s1.temperature_water_in - s1.temperature_water_in_prev
 			if abs(diff) > 20 and s1.temperature_water_in_prev != 999:
