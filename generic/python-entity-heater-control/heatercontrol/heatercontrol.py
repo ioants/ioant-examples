@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-02-04
+# Date: 2019-02-05
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -43,6 +43,13 @@ class Twin:
    temperature_water_in  = 0.0
    temperature_water_out = 0.0
    temperature_smoke     = 0.0
+
+   temperature_indoor_prev    = 0.0
+   temperature_outdoor_prev   = 0.0
+   temperature_water_in_prev  = 0.0
+   temperature_water_out_prev = 0.0
+   temperature_smoke_prev     = 0.0
+	
    temp_smoke_ave        = 0.0
    v1 = 0.0
    v2 = 0.0
@@ -761,23 +768,43 @@ def on_message(topic, message):
 		#logging.info("Temp = "+str(message.value)+" hash="+str(shash))
 		if shash == s1.hash_indoor:
 			print "===> indoor " + str(message.value)
+			s1.temperature_indoor_prev = s1.temperature_indoor
 			s1.temperature_indoor = message.value
+			diff  = s1.temperature_indoor - s1.temperature_indoor_prev
+			if abs(diff) > 20:
+				s1.temperature_indoor = s1.temperature_indoor_prev
 			s1.timeout_temperature_indoor = 60
 		if shash == s1.hash_outdoor:
 			print "===> outdoor " + str(message.value)
+			s1.temperature_outdoor_prev = s1.temperature_outdoor
 			s1.temperature_outdoor = message.value
+			diff  = s1.temperature_outdoor - s1.temperature_outdoor_prev
+			if abs(diff) > 20:
+				s1.temperature_outdoor = s1.temperature_outdoor_prev
 			s1.timeout_temperature_outdoor = 60
 		if shash == s1.hash_water_in:
 			print "===> water in " + str(message.value)
+			s1.temperature_water_in = s1.temperature_water_in
 			s1.temperature_water_in = message.value
+			diff  = s1.temperature_water_in - s1.temperature_water_in_prev
+			if abs(diff) > 20:
+				s1.temperature_water_in = s1.temperature_water_in_prev
 			s1.timeout_temperature_water_in = 60
 		if shash == s1.hash_water_out:
 			print "===> water out " + str(message.value)
+			s1.temperature_water_out_prev = s1.temperature_water_out
 			s1.temperature_water_out = message.value
+			diff  = s1.temperature_water_out - s1.temperature_water_out_prev
+			if abs(diff) > 20:
+				s1.temperature_water_out = s1.temperature_water_out_prev
 			s1.timeout_temperature_water_out = 60
 		if shash == s1.hash_smoke:
 			print "===> smoke " + str(message.value)
+			s1.temperature_smoke_prev = s1.temperature_smoke
 			s1.temperature_smoke = message.value
+			diff  = s1.temperature_smoke - s1.temperature_smoke_prev
+			if abs(diff) > 20:
+				s1.temperature_smoke = s1.temperature_smoke_prev
 			s1.timeout_temperature_smoke = 60
 			s1.v1 = s1.v2
 			s1.v2 = s1.v3
