@@ -51,7 +51,6 @@ class Twin:
    temperature_water_out_prev = 0.0
    temperature_smoke_prev     = 0.0
 	
-   temp_smoke_ave        = 0.0
    v1 = 0.0
    v2 = 0.0
    v3 = 0.0
@@ -548,7 +547,7 @@ def heater_model(p1):
 			if p1.r_inertia > 0: # delay after latest order
 				p1.r_inertia -= 1
 				action += 1
-			if p1.temp_smoke_ave < p1.g_minsmoke: # heater is off
+			if p1.temperature_smoke < p1.g_minsmoke: # heater is off
 				action += 2
 				p1.r_state = p1.STATE_OFF
 				write_log("STATE_ON -> STATE_OFF")
@@ -817,7 +816,6 @@ def on_message(topic, message):
 			s1.v1 = s1.v2
 			s1.v2 = s1.v3
 			s1.v3 = s1.temperature_smoke
-			s1.temp_smoke_ave = (s1.v1 + s1.v2 + s1.v3)/3
 			find_extreme(s1)
 
     #if "Temperature" == ioant.get_message_type_name(topic[message_type]):
