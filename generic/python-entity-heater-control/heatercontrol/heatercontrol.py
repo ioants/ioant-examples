@@ -24,6 +24,7 @@ class Twin:
    r_inertia = 0
    r_onoff   = 0
    r_counter = 0
+   r_errors  = 0
 
    g_inertia = 0
    g_onoff   = 0
@@ -619,6 +620,7 @@ def heater_model(p1):
 	payload += '"state" : "' + str(p1.r_state) + '",\n'
 	payload += '"inertia" : "' + str(p1.r_inertia) + '",\n'
 	payload += '"onoff" : "' + str(p1.r_onoff) + '",\n'
+	payload += '"errors" : "' + str(p1.r_errors) + '",\n'
 	payload += '"temperature_water_out" : "' + str(p1.temperature_water_out) + '",\n'
 	payload += '"temperature_water_in" : "' + str(p1.temperature_water_in) + '",\n'
 	payload += '"temperature_smoke" : "' + str(p1.temperature_smoke) + '"\n'
@@ -679,6 +681,7 @@ def setup(configuration):
 	s1.tmax = datetime.datetime.now() 
 
 	s1.r_counter = 0
+	s1.r_errors = 0
 	
 	s1.STATE_INIT = 0
 	s1.STATE_OFF = 1
@@ -773,6 +776,7 @@ def on_message(topic, message):
 			diff  = s1.temperature_indoor - s1.temperature_indoor_prev
 			if abs(diff) > 20:
 				s1.temperature_indoor = s1.temperature_indoor_prev
+				s1.r_errors += 1
 			s1.timeout_temperature_indoor = 60
 		if shash == s1.hash_outdoor:
 			print "===> outdoor " + str(message.value)
@@ -781,6 +785,7 @@ def on_message(topic, message):
 			diff  = s1.temperature_outdoor - s1.temperature_outdoor_prev
 			if abs(diff) > 20:
 				s1.temperature_outdoor = s1.temperature_outdoor_prev
+				s1.r_errors += 1
 			s1.timeout_temperature_outdoor = 60
 		if shash == s1.hash_water_in:
 			print "===> water in " + str(message.value)
@@ -789,6 +794,7 @@ def on_message(topic, message):
 			diff  = s1.temperature_water_in - s1.temperature_water_in_prev
 			if abs(diff) > 20:
 				s1.temperature_water_in = s1.temperature_water_in_prev
+				s1.r_errors += 1
 			s1.timeout_temperature_water_in = 60
 		if shash == s1.hash_water_out:
 			print "===> water out " + str(message.value)
@@ -797,6 +803,7 @@ def on_message(topic, message):
 			diff  = s1.temperature_water_out - s1.temperature_water_out_prev
 			if abs(diff) > 20:
 				s1.temperature_water_out = s1.temperature_water_out_prev
+				s1.r_errors += 1
 			s1.timeout_temperature_water_out = 60
 		if shash == s1.hash_smoke:
 			print "===> smoke " + str(message.value)
@@ -805,6 +812,7 @@ def on_message(topic, message):
 			diff  = s1.temperature_smoke - s1.temperature_smoke_prev
 			if abs(diff) > 20:
 				s1.temperature_smoke = s1.temperature_smoke_prev
+				s1.r_errors += 1
 			s1.timeout_temperature_smoke = 60
 			s1.v1 = s1.v2
 			s1.v2 = s1.v3
