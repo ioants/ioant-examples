@@ -108,7 +108,7 @@ def publishGowStatic(p1):
 	data['platform'] = 'python'
 	data['url']      = p1.g_gow_server
   	data['ssid']     = 'nowifi'
-	data['action']   = 1
+	data['action']   = 2
 	
 	values = urllib.urlencode(data)
 	req = 'http://' + url + '/' + server + '?' + values
