@@ -624,8 +624,21 @@ def heater_model(p1):
 	payload += '"temperature_water_in" : "' + str(p1.temperature_water_in) + '",\n'
 	payload += '"temperature_smoke" : "' + str(p1.temperature_smoke) + '"\n'
 	payload += '}\n'
-	publishGowDynamic( p1, payload)
-	
+	msg = publishGowDynamic( p1, payload)
+	# STEPPER,<direcion>,<steps>
+	if ":" in msg:
+		p = msg.split(':')
+		#print p[1]
+		q = p[1].split(",")
+		ok = 0
+		if q[0] == 'STEPPER':
+			ok += 1
+		if q[1] == CLOCKWISE or q[1] == COUNTERCLOCKWISE:
+			ok += 1
+		if q[2] > 5 and q[2] < 100:
+			ok += 1
+		if ok == 3:
+			publishStepperMsg(q[2],q[1])		
 	return
 #=====================================================
 def getTopicHash(topic):
