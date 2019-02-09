@@ -634,7 +634,7 @@ def heater_model(p1):
 				publishStepperMsg(int(steps), direction)
 				print ">>>>>> Move Stepper " + str(steps) + " " + str(direction)
 				p1.r_inertia = p1.g_inertia
-				message = 'Auto steps: ' + str(steps) + 'dir: ' + str(direction)
+				message = 'Auto steps: ' + str(steps) + ' dir: ' + str(direction)
 				gow_publishLog(p1, message )
 #========================================================================
 	show_state_mode(p1)
@@ -679,7 +679,7 @@ def heater_model(p1):
 				ok += 1
 			if ok == 3:
 				publishStepperMsg(steps,direction)
-				message = 'Manual steps: ' + str(steps) + 'dir: ' + str(direction)
+				message = 'Manual steps: ' + str(steps) + ' dir: ' + str(direction)
 				gow_publishLog(p1, message )
 	return
 #=====================================================
@@ -829,9 +829,10 @@ def on_message(topic, message):
 			s1.temperature_indoor = message.value
 			diff  = s1.temperature_indoor - s1.temperature_indoor_prev
 			if abs(diff) > 10 and s1.temperature_indoor_prev != 999:
+				message = 'Temperature indoor error: cur=' + str(s1.temperature_indoor) + ' prev=' + str(s1.temperature_indoor_prev)
+				gow_publishLog(s1, message )
 				s1.temperature_indoor = s1.temperature_indoor_prev
 				s1.r_errors += 1
-				write_log("temperature_indoor error value") 
 			s1.timeout_temperature_indoor = 60
 		if shash == s1.hash_outdoor:
 			print "===> outdoor " + str(message.value)
@@ -839,9 +840,10 @@ def on_message(topic, message):
 			s1.temperature_outdoor = message.value
 			diff  = s1.temperature_outdoor - s1.temperature_outdoor_prev
 			if abs(diff) > 10 and s1.temperature_outdoor_prev != 999:
+				message = 'Temperature outdoor error: cur=' + str(s1.temperature_outdoor) + ' prev=' + str(s1.temperature_outdoor_prev)
+				gow_publishLog(s1, message )
 				s1.temperature_outdoor = s1.temperature_outdoor_prev
 				s1.r_errors += 1
-				write_log("temperature_outdoor error value")
 			s1.timeout_temperature_outdoor = 60
 		if shash == s1.hash_water_in:
 			print "===> water in " + str(message.value)
@@ -849,9 +851,10 @@ def on_message(topic, message):
 			s1.temperature_water_in = message.value
 			diff  = s1.temperature_water_in - s1.temperature_water_in_prev
 			if abs(diff) > 10 and s1.temperature_water_in_prev != 999:
+				message = 'Temperature water in error: cur=' + str(s1.temperature_water_in) + ' prev=' + str(s1.temperature_water_in_prev)
+				gow_publishLog(s1, message )
 				s1.temperature_water_in = s1.temperature_water_in_prev
 				s1.r_errors += 1
-				write_log("temperature_water_in error value")
 			s1.timeout_temperature_water_in = 60
 		if shash == s1.hash_water_out:
 			print "===> water out " + str(message.value)
@@ -859,9 +862,10 @@ def on_message(topic, message):
 			s1.temperature_water_out = message.value
 			diff  = s1.temperature_water_out - s1.temperature_water_out_prev
 			if abs(diff) > 10 and s1.temperature_water_out_prev != 999:
+				message = 'Temperature water out error: cur=' + str(s1.temperature_water_out) + ' prev=' + str(s1.temperature_water_out_prev)
+				gow_publishLog(s1, message )
 				s1.temperature_water_out = s1.temperature_water_out_prev
 				s1.r_errors += 1
-				write_log("temperature_water_out error value")
 			s1.timeout_temperature_water_out = 60
 		if shash == s1.hash_smoke:
 			print "===> smoke " + str(message.value)
@@ -869,9 +873,10 @@ def on_message(topic, message):
 			s1.temperature_smoke = message.value
 			diff  = s1.temperature_smoke - s1.temperature_smoke_prev
 			if abs(diff) > 10 and s1.temperature_smoke_prev != 999:
+				message = 'Temperature smoke error: cur=' + str(s1.temperature_smoke) + ' prev=' + str(s1.temperature_smoke_prev)
+				gow_publishLog(s1, message )
 				s1.temperature_smoke = s1.temperature_smoke_prev
 				s1.r_errors += 1
-				write_log("temperature_smoke error value")
 			s1.timeout_temperature_smoke = 60
 			s1.v1 = s1.v2
 			s1.v2 = s1.v3
