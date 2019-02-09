@@ -635,6 +635,9 @@ def heater_model(p1):
 		q = p[1].split(",")
 		m = len(q)
 		print m
+		print q[0]
+		print q[1]
+		print q[2]
 		if m == 3:
 			ok = 0
 			if q[0] == 'STEPPER':
