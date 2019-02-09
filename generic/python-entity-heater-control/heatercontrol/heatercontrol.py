@@ -640,11 +640,16 @@ def heater_model(p1):
 		print q[2]
 		if m == 3:
 			ok = 0
-			if q[0] == 'STEPPER':
+			if q[0] == 'stepper':
 				print 'hej'
 				ok += 1
-			if q[1] == CLOCKWISE or q[1] == COUNTERCLOCKWISE:
-				print 'hopp'
+			if q[1] == 'cw':
+				print 'cw'
+				dir = CLOCKWISE
+				ok += 1
+			if q[1] == 'ccw':
+				print 'ccw'
+				dir = COUNTERCLOCKWISE
 				ok += 1
 			if q[2] > 5 and q[2] < 100:
 				print 'galopp'
