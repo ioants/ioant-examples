@@ -643,7 +643,7 @@ def heater_model(p1):
 			if q[2] > 5 and q[2] < 100:
 				ok += 1
 			if ok == 3:
-			publishStepperMsg(q[2],q[1])		
+				publishStepperMsg(q[2],q[1])		
 	return
 #=====================================================
 def getTopicHash(topic):
