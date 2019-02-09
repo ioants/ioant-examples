@@ -634,15 +634,20 @@ def heater_model(p1):
 		#print p[1]
 		q = p[1].split(",")
 		m = len(q)
+		print m
 		if m == 3:
 			ok = 0
 			if q[0] == 'STEPPER':
+				print 'hej'
 				ok += 1
 			if q[1] == CLOCKWISE or q[1] == COUNTERCLOCKWISE:
+				print 'hopp'
 				ok += 1
 			if q[2] > 5 and q[2] < 100:
+				print 'galopp'
 				ok += 1
 			if ok == 3:
+				print '************************'
 				publishStepperMsg(q[2],q[1])		
 	return
 #=====================================================
