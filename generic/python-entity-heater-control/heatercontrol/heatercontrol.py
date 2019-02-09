@@ -639,24 +639,26 @@ def heater_model(p1):
 		print q[1]
 		print q[2]
 		if m == 3:
+			direction = CLOCKWISE
+			steps = int(q[2])
 			ok = 0
 			if q[0] == 'stepper':
 				print 'hej'
 				ok += 1
 			if q[1] == 'cw':
 				print 'cw'
-				dir = CLOCKWISE
+				direction = CLOCKWISE
 				ok += 1
 			if q[1] == 'ccw':
 				print 'ccw'
-				dir = COUNTERCLOCKWISE
+				direction = COUNTERCLOCKWISE
 				ok += 1
-			if q[2] > 5 and q[2] < 100:
+			if steps > 5 and steps < 100:
 				print 'galopp'
 				ok += 1
 			if ok == 3:
 				print '************************'
-				publishStepperMsg(q[2],q[1])		
+				publishStepperMsg(steps,direction)		
 	return
 #=====================================================
 def getTopicHash(topic):
