@@ -24,7 +24,8 @@ class Twin:
    r_inertia = 0
    r_onoff   = 0
    r_counter = 0
-   r_stop    = 0	
+   r_stop    = 0
+   r_bias    = 0
    r_errors  = 0
 
    g_inertia = 0
@@ -597,6 +598,7 @@ def heater_model(p1):
 			else:
 				y = coeff2*temp + mconst2
 
+			y = y +p1.r_bias
 			publishWanted(y)
 			tmp1 = y*p1.g_relax
 			tmp2 = p1.temperature_water_out*p1.g_relax
@@ -652,6 +654,7 @@ def heater_model(p1):
 	payload += '"onoff" : "' + str(p1.r_onoff) + '",\n'
 	payload += '"errors" : "' + str(p1.r_errors) + '",\n'
 	payload += '"stop" : "' + str(p1.r_stop) + '",\n'
+	payload += '"bias" : "' + str(p1.r_bias) + '",\n'
 	payload += '"temperature_outdoor" : "' + str(p1.temperature_outdoor) + '",\n'
 	payload += '"temperature_water_out" : "' + str(p1.temperature_water_out) + '",\n'
 	payload += '"temperature_water_in" : "' + str(p1.temperature_water_in) + '",\n'
@@ -673,6 +676,11 @@ def heater_model(p1):
 				message = 'Start control: '
 				gow_publishLog(p1, message )
 				p1.r_stop = 0
+		if m == 2:
+			if q[0] == 'bias':
+				p1.r_bias = float(q[1])
+				message = 'Bias: ' + str(p1.r_bias)
+				gow_publishLog(p1, message )		
 		if m == 3:
 			direction = CLOCKWISE
 			steps = int(q[2])
@@ -748,6 +756,7 @@ def setup(configuration):
 
 	s1.r_counter = 0
 	s1.r_errors = 0
+	s1.r_bias = 0.0
 	
 	s1.STATE_INIT = 0
 	s1.STATE_OFF = 1
