@@ -149,6 +149,31 @@ def publishGowDynamic(p1, ipayload):
 		print e.reason
 		
 	return msg
+#===================================================
+def gow_publishLog(p1, message ):
+#===================================================
+	msg = '-'
+	url = p1.g_gow_server
+	server = 'gowServer.php'
+	data = {}
+
+	data['do']       = 'log'
+	data['topic']    = p1.g_gow_topic
+	data['dev_ts']   = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+	data['log']      = message
+	
+	values = urllib.urlencode(data)
+	req = 'http://' + url + '/' + server + '?' + values
+	print req
+	try: 
+		response = urllib2.urlopen(req)
+		msg = response.read()
+		print 'Message to ' + p1.g_gow_topic + ': ' + msg
+		#evaluateAction(the_page)
+	except urllib2.URLError as e:
+		print e.reason
+		
+	return msg
 #=====================================================
 def write_position(pos):
     try:
@@ -609,6 +634,8 @@ def heater_model(p1):
 				publishStepperMsg(int(steps), direction)
 				print ">>>>>> Move Stepper " + str(steps) + " " + str(direction)
 				p1.r_inertia = p1.g_inertia
+				message = 'Auto steps: ' + str(steps) + 'dir: ' + str(direction)
+				gow_publishLog(p1, message )
 #========================================================================
 	show_state_mode(p1)
    	if energy < 999:
@@ -634,31 +661,26 @@ def heater_model(p1):
 		#print p[1]
 		q = p[1].split(",")
 		m = len(q)
-		print m
-		print q[0]
-		print q[1]
-		print q[2]
 		if m == 3:
 			direction = CLOCKWISE
 			steps = int(q[2])
 			ok = 0
 			if q[0] == 'stepper':
-				print 'hej'
 				ok += 1
 			if q[1] == 'cw':
-				print 'cw'
+				#print 'cw'
 				direction = CLOCKWISE
 				ok += 1
 			if q[1] == 'ccw':
-				print 'ccw'
+				#print 'ccw'
 				direction = COUNTERCLOCKWISE
 				ok += 1
 			if steps > 5 and steps < 100:
-				print 'galopp'
 				ok += 1
 			if ok == 3:
-				print '************************'
-				publishStepperMsg(steps,direction)		
+				publishStepperMsg(steps,direction)
+				message = 'Manual steps: ' + str(steps) + 'dir: ' + str(direction)
+				gow_publishLog(p1, message )
 	return
 #=====================================================
 def getTopicHash(topic):
