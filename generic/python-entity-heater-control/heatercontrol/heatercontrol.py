@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-02-06
+# Date: 2019-02-09
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -123,6 +123,7 @@ def publishGowStatic(p1):
 #===================================================
 def publishGowDynamic(p1, ipayload):
 #===================================================
+	msg = '-'
 	url = p1.g_gow_server
 	server = 'gowServer.php'
 	data = {}
@@ -141,11 +142,13 @@ def publishGowDynamic(p1, ipayload):
 	print req
 	try: 
 		response = urllib2.urlopen(req)
-		the_page = response.read()
-		print 'Message to ' + p1.g_gow_topic + ': ' + the_page
+		msg = response.read()
+		print 'Message to ' + p1.g_gow_topic + ': ' + msg
 		#evaluateAction(the_page)
 	except urllib2.URLError as e:
 		print e.reason
+		
+	return msg
 #=====================================================
 def write_position(pos):
     try:
