@@ -24,6 +24,7 @@ class Twin:
    r_inertia = 0
    r_onoff   = 0
    r_counter = 0
+   r_stop    = 0	
    r_errors  = 0
 
    g_inertia = 0
@@ -630,7 +631,7 @@ def heater_model(p1):
 				
 			#show_action_bit_info(action)
 			
-			if action == 0:
+			if action == 0 and p1.r_stop == 0:
 				publishStepperMsg(int(steps), direction)
 				print ">>>>>> Move Stepper " + str(steps) + " " + str(direction)
 				p1.r_inertia = p1.g_inertia
@@ -650,6 +651,8 @@ def heater_model(p1):
 	payload += '"inertia" : "' + str(p1.r_inertia) + '",\n'
 	payload += '"onoff" : "' + str(p1.r_onoff) + '",\n'
 	payload += '"errors" : "' + str(p1.r_errors) + '",\n'
+	payload += '"stop" : "' + str(p1.r_stop) + '",\n'
+	payload += '"temperature_outdoor" : "' + str(p1.temperature_outdoor) + '",\n'
 	payload += '"temperature_water_out" : "' + str(p1.temperature_water_out) + '",\n'
 	payload += '"temperature_water_in" : "' + str(p1.temperature_water_in) + '",\n'
 	payload += '"temperature_smoke" : "' + str(p1.temperature_smoke) + '"\n'
@@ -663,9 +666,13 @@ def heater_model(p1):
 		m = len(q)
 		if m == 1:
 			if q[0] == 'stopcontrol':
-				print 'stop ****************'
+				message = 'Stop control: '
+				gow_publishLog(p1, message )
+				p1.r_stop = 1
 			if q[0] == 'startcontrol':
-				print 'start ****************'
+				message = 'Start control: '
+				gow_publishLog(p1, message )
+				p1.r_stop = 0
 		if m == 3:
 			direction = CLOCKWISE
 			steps = int(q[2])
