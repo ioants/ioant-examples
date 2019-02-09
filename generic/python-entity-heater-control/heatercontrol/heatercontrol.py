@@ -661,6 +661,11 @@ def heater_model(p1):
 		#print p[1]
 		q = p[1].split(",")
 		m = len(q)
+		if m == 1:
+			if q[0] == 'stopcontrol':
+				print 'stop ****************'
+			if q[0] == 'startcontrol':
+				print 'start ****************'
 		if m == 3:
 			direction = CLOCKWISE
 			steps = int(q[2])
