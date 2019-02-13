@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-02-09
+# Date: 2019-02-13
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -650,7 +650,8 @@ def heater_model(p1):
 	payload += '"target" : "' + str(y) + '",\n'
 	payload += '"mode" : "' + str(p1.r_mode) + '",\n'
 	payload += '"state" : "' + str(p1.r_state) + '",\n'
-	payload += '"inertia" : "' + str(p1.r_inertia) + '",\n'
+	payload += '"inertia" : "' + str(p1.g_inertia) + '",\n'
+	payload += '"cur_inertia" : "' + str(p1.r_inertia) + '",\n'
 	payload += '"onoff" : "' + str(p1.r_onoff) + '",\n'
 	payload += '"errors" : "' + str(p1.r_errors) + '",\n'
 	payload += '"stop" : "' + str(p1.r_stop) + '",\n'
@@ -680,7 +681,12 @@ def heater_model(p1):
 			if q[0] == 'bias':
 				p1.r_bias = float(q[1])
 				message = 'Bias: ' + str(p1.r_bias)
-				gow_publishLog(p1, message )		
+				gow_publishLog(p1, message )	
+		if m == 2:
+			if q[0] == 'inertia':
+				p1.g_inertia = float(q[1])
+				message = 'Inertia: ' + str(p1.r_bias)
+				gow_publishLog(p1, message )	
 		if m == 3:
 			direction = CLOCKWISE
 			steps = int(q[2])
