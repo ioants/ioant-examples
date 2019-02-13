@@ -709,7 +709,7 @@ def heater_model(p1):
 
 			if q[0] == 'minsmoke':
 				p1.g_minsmoke = float(q[1])
-				message = 'min_smoke: ' + str(p1.r_minsmoke)
+				message = 'minsmoke: ' + str(p1.r_minsmoke)
 				gow_publishLog(p1, message )	
 
 			if q[0] == 'minsteps':
@@ -722,8 +722,8 @@ def heater_model(p1):
 				message = 'maxsteps: ' + str(p1.r_maxsteps)
 				gow_publishLog(p1, message )	
 
-			if q[0] == 'max_energy':
-				p1.g_max_energy = float(q[1])
+			if q[0] == 'maxenergy':
+				p1.g_maxenergy = float(q[1])
 				message = 'maxenergy: ' + str(p1.r_maxenergy)
 				gow_publishLog(p1, message )	
 				
