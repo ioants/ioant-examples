@@ -696,11 +696,37 @@ def heater_model(p1):
 				p1.r_bias = float(q[1])
 				message = 'Bias: ' + str(p1.r_bias)
 				gow_publishLog(p1, message )	
-		if m == 2:
+
 			if q[0] == 'inertia':
 				p1.g_inertia = float(q[1])
 				message = 'Inertia: ' + str(p1.r_bias)
 				gow_publishLog(p1, message )	
+
+			if q[0] == 'onoff':
+				p1.g_onoff = float(q[1])
+				message = 'onoff: ' + str(p1.r_onoff)
+				gow_publishLog(p1, message )
+
+			if q[0] == 'min_smoke':
+				p1.g_min_smoke = float(q[1])
+				message = 'min_smoke: ' + str(p1.r_min_smoke)
+				gow_publishLog(p1, message )	
+
+			if q[0] == 'minsteps':
+				p1.g_minsteps = float(q[1])
+				message = 'minsteps: ' + str(p1.r_minsteps)
+				gow_publishLog(p1, message )	
+
+			if q[0] == 'maxsteps':
+				p1.g_maxsteps = float(q[1])
+				message = 'maxsteps: ' + str(p1.r_maxsteps)
+				gow_publishLog(p1, message )	
+
+			if q[0] == 'max_energy':
+				p1.g_max_energy = float(q[1])
+				message = 'max_energy: ' + str(p1.r_max_energy)
+				gow_publishLog(p1, message )	
+				
 		if m == 3:
 			direction = CLOCKWISE
 			steps = int(q[2])
