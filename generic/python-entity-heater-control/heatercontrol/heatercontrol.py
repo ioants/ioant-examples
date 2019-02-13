@@ -123,7 +123,7 @@ def publishGowStatic(p1):
 	except urllib2.URLError as e:
 		print e.reason
 #===================================================
-def publishGowDynamic(p1):
+def publishGowDynamic(p1,payload):
 #===================================================
 	msg = '-'
 	url = p1.g_gow_server
@@ -136,19 +136,7 @@ def publishGowDynamic(p1):
 	data['rssi']     = 0
 	data['dev_ts']   = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	data['fail']     = 0
-	# Current Configuration
-	data['mintemp'] = p1.g_mintemp
-	data['maxtemp'] = p1.g_maxtemp
-	data['minheat'] = p1.g_minheat
-	data['maxheat'] = p1.g_maxheat
-	data['x_0'] = p1.g_x_0
-	data['y_0'] = p1.g_y_0
-	data['relax'] = p1.g_relax
-	data['min_smoke'] = p1.g_min_smoke
-	data['minsteps'] = p1.g_minsteps
-	data['maxsteps'] = p1.g_maxsteps
-	data['defsteps'] = p1.g_defsteps
-	data['max_energy'] = p1.g_max_energy
+	data['payload']    = payload
 	
 	values = urllib.urlencode(data)
 	req = 'http://' + url + '/' + server + '?' + values
@@ -655,8 +643,22 @@ def heater_model(p1):
 	show_state_mode(p1)
    	if energy < 999:
 		publishEnergyMsg(energy)
-
+		
+	# Current Configuration
 	payload  = '{\n'
+	payload += '"mintemp" : "' + str(p1.g_mintemp) + '",\n'
+	payload += '"maxtemp" : "' + str(p1.g_maxtemp) + '",\n'
+	payload += '"minheat" : "' + str(p1.g_minheat) + '",\n'
+	payload += '"maxheat" : "' + str(p1.g_maxheat) + '",\n'
+	payload += '"x_0" : "' + str(p1.g_x_0) + '",\n'
+	payload += '"y_0" : "' + str(p1.g_y_0) + '",\n'
+	payload += '"relax" : "' + str(p1.g_relax) + '",\n'
+	payload += '"min_smoke" : "' + str(p1.g_min_smoke) + '",\n'
+	payload += '"minsteps" : "' + str(p1.g_minsteps) + '",\n'
+	payload += '"maxsteps" : "' + str(p1.g_maxsteps) + '",\n'
+	payload += '"defsteps" : "' + str(p1.g_defsteps) + '",\n'
+	payload += '"max_energy" : "' + str(p1.g_max_energy) + '",\n'
+	
 	payload += '"flags" : "' + str(action) + '",\n'
 	payload += '"steps" : "' + str(steps) + '",\n'
 	payload += '"target" : "' + str(y) + '",\n'
@@ -673,7 +675,7 @@ def heater_model(p1):
 	payload += '"temperature_water_in" : "' + str(p1.temperature_water_in) + '",\n'
 	payload += '"temperature_smoke" : "' + str(p1.temperature_smoke) + '"\n'
 	payload += '}\n'
-	msg = publishGowDynamic(p1)
+	msg = publishGowDynamic(p1,payload)
 	# STEPPER,<direcion>,<steps>
 	if ":" in msg:
 		p = msg.split(':')
