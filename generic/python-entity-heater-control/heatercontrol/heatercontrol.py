@@ -77,11 +77,11 @@ class Twin:
    g_x_0     = 0.0
    g_y_0     = 0.0
    g_relax   = 4.0
-   g_min_smoke = 0.0
+   g_minsmoke = 0.0
    g_minsteps  = 0
    g_maxsteps  = 0
    g_defsteps  = 0  
-   g_max_energy = 0 
+   g_maxenergy = 0 
  
    # other
    g_tmax = 0
@@ -616,7 +616,7 @@ def heater_model(p1):
 				action += 16
 
 			energy = p1.temperature_water_out - p1.temperature_water_in
-			if energy > p1.g_max_energy and steps > 0:
+			if energy > p1.g_maxenergy and steps > 0:
 				action += 64
 
 			if steps > 0:
@@ -653,11 +653,11 @@ def heater_model(p1):
 	payload += '"x_0" : "' + str(p1.g_x_0) + '",\n'
 	payload += '"y_0" : "' + str(p1.g_y_0) + '",\n'
 	payload += '"relax" : "' + str(p1.g_relax) + '",\n'
-	payload += '"min_smoke" : "' + str(p1.g_min_smoke) + '",\n'
+	payload += '"minsmoke" : "' + str(p1.g_minsmoke) + '",\n'
 	payload += '"minsteps" : "' + str(p1.g_minsteps) + '",\n'
 	payload += '"maxsteps" : "' + str(p1.g_maxsteps) + '",\n'
 	payload += '"defsteps" : "' + str(p1.g_defsteps) + '",\n'
-	payload += '"max_energy" : "' + str(p1.g_max_energy) + '",\n'
+	payload += '"maxenergy" : "' + str(p1.g_maxenergy) + '",\n'
 	
 	payload += '"flags" : "' + str(action) + '",\n'
 	payload += '"steps" : "' + str(steps) + '",\n'
@@ -707,9 +707,9 @@ def heater_model(p1):
 				message = 'onoff: ' + str(p1.r_onoff)
 				gow_publishLog(p1, message )
 
-			if q[0] == 'min_smoke':
-				p1.g_min_smoke = float(q[1])
-				message = 'min_smoke: ' + str(p1.r_min_smoke)
+			if q[0] == 'minsmoke':
+				p1.g_minsmoke = float(q[1])
+				message = 'min_smoke: ' + str(p1.r_minsmoke)
 				gow_publishLog(p1, message )	
 
 			if q[0] == 'minsteps':
@@ -724,7 +724,7 @@ def heater_model(p1):
 
 			if q[0] == 'max_energy':
 				p1.g_max_energy = float(q[1])
-				message = 'max_energy: ' + str(p1.r_max_energy)
+				message = 'maxenergy: ' + str(p1.r_maxenergy)
 				gow_publishLog(p1, message )	
 				
 		if m == 3:
@@ -824,7 +824,7 @@ def setup(configuration):
 	s1.g_x_0 = 0
 	s1.g_y_0 = 35
 	s1.g_relax = 3.0
-	s1.g_max_energy = 4.0
+	s1.g_maxenergy = 4.0
 	s1.g_period = 5000
 	s1.g_gow_server = 'gow.test.com'
 	s1.g_gow_topic = 'etc/etc/etc/0'
@@ -860,7 +860,7 @@ def setup(configuration):
 	s1.g_onoff = int(configuration["algorithm"]["onofftime"])
 	s1.g_inertia = int(configuration["algorithm"]["inertia"])
 	s1.g_relax = float(configuration["algorithm"]["relax"])
-	s1.g_max_energy = float(configuration["algorithm"]["maxenergy"])
+	s1.g_maxenergy = float(configuration["algorithm"]["maxenergy"])
 
 	s1.r_state = s1.STATE_OFF
 	write_log("START -> STATE_OFF")
