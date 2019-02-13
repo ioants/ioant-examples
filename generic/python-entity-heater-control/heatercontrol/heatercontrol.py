@@ -123,7 +123,7 @@ def publishGowStatic(p1):
 	except urllib2.URLError as e:
 		print e.reason
 #===================================================
-def publishGowDynamic(p1, ipayload):
+def publishGowDynamic(p1):
 #===================================================
 	msg = '-'
 	url = p1.g_gow_server
@@ -136,8 +136,19 @@ def publishGowDynamic(p1, ipayload):
 	data['rssi']     = 0
 	data['dev_ts']   = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	data['fail']     = 0
-	# payload
-	data['payload'] = ipayload
+	# Current Configuration
+	data['mintemp'] = p1.g_mintemp
+	data['maxtemp'] = p1.g_maxtemp
+	data['minheat'] = p1.g_minheat
+	data['maxheat'] = p1.g_maxheat
+	data['x_0'] = p1.g_x_0
+	data['y_0'] = p1.g_y_0
+	data['relax'] = p1.g_relax
+	data['min_smoke'] = p1.g_min_smoke
+	data['minsteps'] = p1.g_minsteps
+	data['maxsteps'] = p1.g_maxsteps
+	data['defsteps'] = p1.g_defsteps
+	data['max_energy'] = p1.g_max_energy
 	
 	values = urllib.urlencode(data)
 	req = 'http://' + url + '/' + server + '?' + values
@@ -661,7 +672,7 @@ def heater_model(p1):
 	payload += '"temperature_water_in" : "' + str(p1.temperature_water_in) + '",\n'
 	payload += '"temperature_smoke" : "' + str(p1.temperature_smoke) + '"\n'
 	payload += '}\n'
-	msg = publishGowDynamic( p1, payload)
+	msg = publishGowDynamic(p1)
 	# STEPPER,<direcion>,<steps>
 	if ":" in msg:
 		p = msg.split(':')
