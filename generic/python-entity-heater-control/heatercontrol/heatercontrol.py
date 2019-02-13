@@ -267,6 +267,7 @@ def init_log():
     return
 #=====================================================
 def publishStepperMsg(steps, direction):
+    steps = abs(steps)
     msg = "ORDER steps to move: "+str(steps) + " dir:" + str(direction)
     write_history(msg)
     print msg
@@ -278,7 +279,7 @@ def publishStepperMsg(steps, direction):
     out_msg = ioant.create_message("RunStepperMotorRaw")
     out_msg.direction = direction
     out_msg.delay_between_steps = 5
-    out_msg.number_of_step = abs(steps)
+    out_msg.number_of_step = steps
     out_msg.step_size = out_msg.StepSize.Value("FULL_STEP")
     topic = ioant.get_topic_structure()
     topic['top'] = 'live'
@@ -701,6 +702,7 @@ def heater_model(p1):
 		if m == 3:
 			direction = CLOCKWISE
 			steps = int(q[2])
+			steps = abs(steps)
 			ok = 0
 			if q[0] == 'stepper':
 				ok += 1
