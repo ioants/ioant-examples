@@ -573,6 +573,7 @@ def heater_model(p1):
 			p1.r_onoff += 1
 			if p1.r_onoff == p1.g_onoff:
 				p1.r_state = p1.STATE_ON
+				p1.r_inertia = 0
 				write_log("STATE_WARMING -> STATE_ON")
 				message = 'STATE_ON'
 				gow_publishLog(p1, message )
