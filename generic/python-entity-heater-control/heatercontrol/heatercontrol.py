@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-02-13
+# Date: 2019-02-14
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -552,10 +552,14 @@ def heater_model(p1):
 			p1.r_mode = p1.MODE_ONLINE
 			write_log("MODE_OFFLINE -> MODE_ONLINE")
 			p1.r_inertia = p1.g_inertia
+			message = 'MODE_ONLINE'
+			gow_publishLog(p1, message )
 	if p1.r_mode == p1.MODE_ONLINE:
 		if old_data == 1:
 			p1.r_mode = p1.MODE_OFFLINE
 			write_log("MODE_ONLINE -> MODE_OFFLINE")
+			message = 'MODE_OFFLINE'
+			gow_publishLog(p1, message )
 		if p1.r_state == p1.STATE_OFF:
 			p1.r_onoff -= 1
 			if p1.r_onoff < 0:
@@ -563,15 +567,21 @@ def heater_model(p1):
 			if p1.temperature_smoke > p1.g_minsmoke:
 				p1.r_state = p1.STATE_WARMING
 				write_log("STATE_OFF -> STATE_WARMING")
+				message = 'STATE_WARMING'
+				gow_publishLog(p1, message )
 		if p1.r_state == p1.STATE_WARMING:
 			p1.r_onoff += 1
 			if p1.r_onoff == p1.g_onoff:
 				p1.r_state = p1.STATE_ON
 				write_log("STATE_WARMING -> STATE_ON")
+				message = 'STATE_ON'
+				gow_publishLog(p1, message )
 			if p1.temperature_smoke < p1.g_minsmoke:
 				p1.r_state = p1.STATE_OFF
 				write_log("STATE_WARMING -> STATE_OFF")
 				p1.r_onoff = 0
+				message = 'STATE_OFF'
+				gow_publishLog(p1, message )
 		if p1.r_state == p1.STATE_ON:
 			action = 0
 			if p1.r_inertia > 0: # delay after latest order
@@ -582,6 +592,8 @@ def heater_model(p1):
 				p1.r_state = p1.STATE_OFF
 				write_log("STATE_ON -> STATE_OFF")
 				p1.r_onoff = 0
+				message = 'STATE_OFF'
+				gow_publishLog(p1, message )
 			if p1.temperature_indoor > 20: # no warming above 20
 				action += 4
 
