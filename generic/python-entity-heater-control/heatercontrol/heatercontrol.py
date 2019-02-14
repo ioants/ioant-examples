@@ -647,6 +647,7 @@ def heater_model(p1):
 			#show_action_bit_info(action)
 			
 			if action == 0 and p1.r_stop == 0:
+				steps = abs(steps)
 				publishStepperMsg(int(steps), direction)
 				print ">>>>>> Move Stepper " + str(steps) + " " + str(direction)
 				p1.r_inertia = p1.g_inertia
