@@ -125,7 +125,6 @@
         "maxheat" : 40,
         "minsteps" : 5,
         "maxsteps" : 40,
-        "defsteps" : 30,
         "onofftime" : 720,
         "relax" : 4,
         "minsmoke" : 28.0,
