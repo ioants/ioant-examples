@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-02-14
+# Date: 2019-02-16
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -80,7 +80,6 @@ class Twin:
    g_minsmoke = 0.0
    g_minsteps  = 0
    g_maxsteps  = 0
-   g_defsteps  = 0  
    g_maxenergy = 0 
  
    # other
@@ -670,7 +669,6 @@ def heater_model(p1):
 	payload += '"minsmoke" : "' + str(p1.g_minsmoke) + '",\n'
 	payload += '"minsteps" : "' + str(p1.g_minsteps) + '",\n'
 	payload += '"maxsteps" : "' + str(p1.g_maxsteps) + '",\n'
-	payload += '"defsteps" : "' + str(p1.g_defsteps) + '",\n'
 	payload += '"maxenergy" : "' + str(p1.g_maxenergy) + '",\n'
 	
 	payload += '"flags" : "' + str(action) + '",\n'
@@ -828,7 +826,6 @@ def setup(configuration):
 	
 	s1.g_minsteps = 5
 	s1.g_maxsteps = 30
-	s1.g_defsteps = 10
 	s1.g_minsmoke = 27
 	s1.g_mintemp = -7
 	s1.g_maxtemp = 10
@@ -863,7 +860,6 @@ def setup(configuration):
 	s1.g_gow_topic = str(configuration["gow_topic"])
 	s1.g_minsteps = int(configuration["algorithm"]["minsteps"])
 	s1.g_maxsteps = int(configuration["algorithm"]["maxsteps"])
-	s1.g_defsteps = int(configuration["algorithm"]["defsteps"])
 	s1.g_minsmoke = float(configuration["algorithm"]["minsmoke"])
 	s1.g_mintemp = float(configuration["algorithm"]["mintemp"])
 	s1.g_maxtemp = float(configuration["algorithm"]["maxtemp"])
