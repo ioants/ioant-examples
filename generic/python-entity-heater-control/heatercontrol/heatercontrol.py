@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-02-16
+# Date: 2019-02-28
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -594,8 +594,6 @@ def heater_model(p1):
 				p1.r_onoff = 0
 				message = 'STATE_OFF'
 				gow_publishLog(p1, message )
-			if p1.temperature_indoor > 20: # no warming above 20
-				action += 4
 
 
 			temp = p1.temperature_outdoor
@@ -633,6 +631,8 @@ def heater_model(p1):
 
 			if steps > 0:
 				direction = COUNTERCLOCKWISE
+				if p1.temperature_indoor > 20: # no warming above 20
+					action += 4
 			if steps < 0:
 				direction = CLOCKWISE
 			if steps == 0:
@@ -683,6 +683,7 @@ def heater_model(p1):
 	payload += '"stop" : "' + str(p1.r_stop) + '",\n'
 	payload += '"bias" : "' + str(p1.r_bias) + '",\n'
 	payload += '"temperature_outdoor" : "' + str(p1.temperature_outdoor) + '",\n'
+	payload += '"temperature_indoor" : "' + str(p1.temperature_indoor) + '",\n'
 	payload += '"temperature_water_out" : "' + str(p1.temperature_water_out) + '",\n'
 	payload += '"temperature_water_in" : "' + str(p1.temperature_water_in) + '",\n'
 	payload += '"temperature_smoke" : "' + str(p1.temperature_smoke) + '"\n'
