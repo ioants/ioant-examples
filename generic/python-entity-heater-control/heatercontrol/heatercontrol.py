@@ -104,28 +104,19 @@ def publishIotStatic(p1):
 	data = {}
 	# meta data
 	data['do']       = 'static'
-    payload  = '{'
-    payload += '"title" : "'    + str(co.mytitle) + '",'
-    payload += '"desc" : "'     + str(co.mydesc) + '",'
-    payload += '"tags" : "'     + str(co.mytags) + '",'
-    payload += '"feedback" : "' + str(co.myfeedback) + '",'
-    payload += '"period" : "'   + str(co.myperiod) + '",'
-    payload += '"sw" : "'       + str(co.mysw) + '",'
-    payload += '"library" : "'  + str(co.mylibrary) + '",'
-    payload += '"platform" : "' + str(co.myplatform) + '"'
-    payload += '}'
-    data['json']     = payload
-
-	data['desc']     = 'pellets_heater'
-	data['tags']     = 'heater'
-	data['topic']    = p1.g_gow_topic
-	data['no']       = p1.r_counter
-	data['wrap']     = 999999
-	data['period']   = p1.g_period
-	data['platform'] = 'python'
-	data['url']      = p1.g_gow_server
-  	data['ssid']     = 'nowifi'
-	data['action']   = 2
+	data['id']       = p1.g_iot_id
+	payload  = '{'
+	payload += '"title" : "'    + 'pellets_heater + '",'
+	payload += '"desc" : "'     + 'kvv32_heater' + '",'
+	payload += '"tags" : "'     + 'heater' + '",'
+	payload += '"feedback" : "' + '2' + '",'
+	payload += '"period" : "'   + str(p1.g_period) + '",'
+	payload += '"wrap" : "'     + '999999' + '",'
+	payload += '"sw" : "'       + '0.1' + '",'
+	payload += '"library" : "'  + '0.1' + '",'
+	payload += '"platform" : "' + 'python + '"'
+	payload += '}'
+	data['json']     = payload
 	
 	values = urllib.urlencode(data)
 	req = 'http://' + url + '/' + server + '?' + values
@@ -133,7 +124,7 @@ def publishIotStatic(p1):
 	try: 
 		response = urllib2.urlopen(req)
 		the_page = response.read()
-		print 'Message to ' + p1.g_gow_topic + ': ' + the_page
+		print 'Message to heater' +  + ': ' + the_page
 		#evaluateAction(the_page)
 	except urllib2.URLError as e:
 		print e.reason
@@ -928,6 +919,7 @@ def setup(configuration):
 	init_log()
 	init_history()
 	publishGowStatic(s1)
+	publishIotStatic(s1)
 #=====================================================
 def loop():
     global s1
