@@ -1,7 +1,7 @@
 # =============================================
 # File: heatercontrol.py
 # Author: Benny Saxen
-# Date: 2019-02-28
+# Date: 2019-03-13
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -89,9 +89,54 @@ class Twin:
    # gow
    g_gow_server = 'test.com'
    g_gow_topic  = 'test/topic'
+	
+   # iot
+   g_iot_server = 'test.com'
+   g_iot_id     = '1234'
 #======================================
 s1 = Twin()
 
+#===================================================
+def publishIotStatic(p1):
+#===================================================
+	url = p1.g_iot_server
+	server = 'gateway.php'
+	data = {}
+	# meta data
+	data['do']       = 'static'
+    payload  = '{'
+    payload += '"title" : "'    + str(co.mytitle) + '",'
+    payload += '"desc" : "'     + str(co.mydesc) + '",'
+    payload += '"tags" : "'     + str(co.mytags) + '",'
+    payload += '"feedback" : "' + str(co.myfeedback) + '",'
+    payload += '"period" : "'   + str(co.myperiod) + '",'
+    payload += '"sw" : "'       + str(co.mysw) + '",'
+    payload += '"library" : "'  + str(co.mylibrary) + '",'
+    payload += '"platform" : "' + str(co.myplatform) + '"'
+    payload += '}'
+    data['json']     = payload
+
+	data['desc']     = 'pellets_heater'
+	data['tags']     = 'heater'
+	data['topic']    = p1.g_gow_topic
+	data['no']       = p1.r_counter
+	data['wrap']     = 999999
+	data['period']   = p1.g_period
+	data['platform'] = 'python'
+	data['url']      = p1.g_gow_server
+  	data['ssid']     = 'nowifi'
+	data['action']   = 2
+	
+	values = urllib.urlencode(data)
+	req = 'http://' + url + '/' + server + '?' + values
+	print req
+	try: 
+		response = urllib2.urlopen(req)
+		the_page = response.read()
+		print 'Message to ' + p1.g_gow_topic + ': ' + the_page
+		#evaluateAction(the_page)
+	except urllib2.URLError as e:
+		print e.reason
 #===================================================
 def publishGowStatic(p1):
 #===================================================
